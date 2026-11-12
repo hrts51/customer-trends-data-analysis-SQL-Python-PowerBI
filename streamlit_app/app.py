@@ -9,6 +9,7 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from clv_model import compute_clv, train_clv_model
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -99,6 +100,9 @@ def load_data():
         (df["subscription_status"] == "No")
     ).astype(int)
 
+    # CLV
+    df = compute_clv(df)
+
     return df
 
 df = load_data()
@@ -150,12 +154,13 @@ c6.metric("Churn Risk",        f"{filtered['churn_risk'].sum():,}")
 st.markdown("---")
 
 # ── Tab layout ────────────────────────────────────────────────────────────────
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
     "📊 Revenue Overview",
     "👥 Customer Segments",
     "🎯 RFM Analysis",
     "⚠️ Churn Risk",
     "🗺️ Geographic Map",
+    "💰 CLV Prediction",
     "📋 Raw Data"
 ])
 
@@ -578,16 +583,158 @@ with tab5:
 
 
 # ════════════════════════════════════════════════════════
-# TAB 6 — Raw Data
+# TAB 6 — CLV Prediction
 # ════════════════════════════════════════════════════════
 with tab6:
+    st.markdown("""
+    **Customer Lifetime Value (CLV)** estimates the total revenue a customer will generate over their relationship with the business.
+    Calculated as: `CLV = Avg Purchase × Purchase Frequency/Year × Estimated Lifespan (Years)`
+    Then a **Gradient Boosting Regressor** is trained to predict CLV from behavioural features.
+    """)
+
+    # ── KPIs ──
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Mean CLV",   f"${filtered['clv_estimated'].mean():,.0f}")
+    c2.metric("Max CLV",    f"${filtered['clv_estimated'].max():,.0f}")
+    c3.metric("Min CLV",    f"${filtered['clv_estimated'].min():,.0f}")
+    c4.metric("Total Proj. Revenue", f"${filtered['clv_estimated'].sum():,.0f}")
+
+    st.markdown("---")
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown('<div class="section-header">CLV Distribution</div>', unsafe_allow_html=True)
+        fig = px.histogram(filtered, x="clv_estimated", nbins=40,
+                           color_discrete_sequence=["#a78bfa"],
+                           labels={"clv_estimated": "Estimated CLV (USD)"})
+        fig.add_vline(x=filtered["clv_estimated"].mean(), line_dash="dash",
+                      line_color="#fbbf24",
+                      annotation_text=f"Mean ${filtered['clv_estimated'].mean():,.0f}")
+        fig.update_layout(plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
+                          font_color="#cbd5e1", height=320, margin=dict(l=0,r=0,t=20,b=0))
+        st.plotly_chart(fig, use_container_width=True)
+
+    with col2:
+        st.markdown('<div class="section-header">CLV Tier Breakdown</div>', unsafe_allow_html=True)
+        tier_counts = filtered["clv_tier"].value_counts().reset_index()
+        tier_counts.columns = ["tier", "count"]
+        tier_colors = {"High Value":"#4ade80","Mid Value":"#fbbf24","Low Value":"#f87171"}
+        fig = px.pie(tier_counts, names="tier", values="count",
+                     color="tier", color_discrete_map=tier_colors, hole=0.45)
+        fig.update_traces(textinfo="percent+label", textfont_size=13)
+        fig.update_layout(plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
+                          font_color="#cbd5e1", height=320, showlegend=False,
+                          margin=dict(l=0,r=0,t=20,b=0))
+        st.plotly_chart(fig, use_container_width=True)
+
+    col3, col4 = st.columns(2)
+
+    with col3:
+        st.markdown('<div class="section-header">Avg CLV by Category</div>', unsafe_allow_html=True)
+        clv_cat = filtered.groupby("category")["clv_estimated"].mean().reset_index().sort_values("clv_estimated", ascending=True)
+        fig = px.bar(clv_cat, x="clv_estimated", y="category", orientation="h",
+                     color="clv_estimated", color_continuous_scale="Purples",
+                     labels={"clv_estimated":"Avg CLV (USD)","category":""},
+                     text="clv_estimated")
+        fig.update_traces(texttemplate="$%{text:,.0f}", textposition="outside")
+        fig.update_layout(showlegend=False, coloraxis_showscale=False,
+                          plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
+                          font_color="#cbd5e1", height=300, margin=dict(l=0,r=70,t=10,b=0))
+        st.plotly_chart(fig, use_container_width=True)
+
+    with col4:
+        st.markdown('<div class="section-header">Avg CLV by Subscription Status</div>', unsafe_allow_html=True)
+        clv_sub = filtered.groupby("subscription_status")["clv_estimated"].mean().reset_index()
+        fig = px.bar(clv_sub, x="subscription_status", y="clv_estimated",
+                     color="subscription_status",
+                     color_discrete_map={"Yes":"#4ade80","No":"#f87171"},
+                     labels={"clv_estimated":"Avg CLV (USD)","subscription_status":""},
+                     text="clv_estimated")
+        fig.update_traces(texttemplate="$%{text:,.0f}", textposition="outside")
+        fig.update_layout(showlegend=False, plot_bgcolor="rgba(0,0,0,0)",
+                          paper_bgcolor="rgba(0,0,0,0)", font_color="#cbd5e1",
+                          height=300, margin=dict(l=0,r=0,t=10,b=0))
+        st.plotly_chart(fig, use_container_width=True)
+
+    st.markdown('<div class="section-header">CLV vs Previous Purchases (by Tier)</div>', unsafe_allow_html=True)
+    sample = filtered.sample(min(600, len(filtered)), random_state=42)
+    fig = px.scatter(sample, x="previous_purchases", y="clv_estimated",
+                     color="clv_tier", color_discrete_map=tier_colors,
+                     size="purchase_amount", hover_data=["age","gender","category"],
+                     labels={"previous_purchases":"Previous Purchases",
+                             "clv_estimated":"Estimated CLV (USD)", "clv_tier":"Tier"},
+                     opacity=0.7)
+    fig.update_layout(plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
+                      font_color="#cbd5e1", height=380, margin=dict(l=0,r=0,t=10,b=0))
+    st.plotly_chart(fig, use_container_width=True)
+
+    # ── ML Model ──
+    st.markdown("---")
+    st.markdown("### 🤖 Gradient Boosting CLV Prediction Model")
+    st.caption("Trained on full dataset — predicts CLV from 11 customer features")
+
+    with st.spinner("Training model..."):
+        model, X_test, y_test, y_pred, feat_names, metrics = train_clv_model(df)
+
+    mc1, mc2, mc3 = st.columns(3)
+    mc1.metric("R² Score", metrics["R² Score"],
+               help="1.0 = perfect prediction. >0.85 is excellent.")
+    mc2.metric("Mean Abs Error", f"${metrics['MAE']:,.0f}",
+               help="Average prediction error in USD")
+    mc3.metric("Dataset Mean CLV", f"${metrics['Mean CLV']:,.0f}")
+
+    col5, col6 = st.columns(2)
+
+    with col5:
+        st.markdown('<div class="section-header">Actual vs Predicted CLV</div>', unsafe_allow_html=True)
+        pred_df = pd.DataFrame({"Actual": y_test.values, "Predicted": y_pred})
+        fig = px.scatter(pred_df, x="Actual", y="Predicted",
+                         opacity=0.5, color_discrete_sequence=["#60a5fa"])
+        # Perfect prediction line
+        max_val = max(pred_df["Actual"].max(), pred_df["Predicted"].max())
+        fig.add_shape(type="line", x0=0, y0=0, x1=max_val, y1=max_val,
+                      line=dict(color="#f87171", dash="dash", width=2))
+        fig.update_layout(plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
+                          font_color="#cbd5e1", height=360,
+                          margin=dict(l=0,r=0,t=10,b=0))
+        st.plotly_chart(fig, use_container_width=True)
+
+    with col6:
+        st.markdown('<div class="section-header">Feature Importance</div>', unsafe_allow_html=True)
+        importance_df = pd.DataFrame({
+            "Feature": feat_names,
+            "Importance": model.feature_importances_
+        }).sort_values("Importance", ascending=True)
+        fig = px.bar(importance_df, x="Importance", y="Feature", orientation="h",
+                     color="Importance", color_continuous_scale="Viridis",
+                     labels={"Importance":"Importance Score","Feature":""})
+        fig.update_layout(showlegend=False, coloraxis_showscale=False,
+                          plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
+                          font_color="#cbd5e1", height=360,
+                          margin=dict(l=0,r=0,t=10,b=0))
+        st.plotly_chart(fig, use_container_width=True)
+
+    # Top high value customers
+    st.markdown('<div class="section-header">Top 20 Highest CLV Customers</div>', unsafe_allow_html=True)
+    top_clv = filtered.nlargest(20, "clv_estimated")[
+        ["customer_id","age","gender","category","purchase_amount",
+         "previous_purchases","subscription_status","clv_estimated","clv_tier","rfm_segment"]
+    ].copy()
+    top_clv["clv_estimated"] = top_clv["clv_estimated"].apply(lambda x: f"${x:,.0f}")
+    st.dataframe(top_clv, use_container_width=True, hide_index=True)
+
+
+# ════════════════════════════════════════════════════════
+# TAB 7 — Raw Data
+# ════════════════════════════════════════════════════════
+with tab7:
     st.markdown(f"**Showing {len(filtered):,} of {len(df):,} records** (after filters)")
     st.dataframe(
         filtered[[
             "customer_id","age","gender","category","item_purchased",
             "purchase_amount","season","review_rating","subscription_status",
             "shipping_type","payment_method","previous_purchases",
-            "loyalty_tier","rfm_segment","churn_risk"
+            "loyalty_tier","rfm_segment","churn_risk","clv_estimated","clv_tier"
         ]].reset_index(drop=True),
         use_container_width=True,
         hide_index=True
