@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Customer Shopping Behavior Analysis — Documentation</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #0f1117;
+    color: #e2e8f0;
+    line-height: 1.7;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    background: linear-gradient(135deg, #1a1f2e 0%, #0d1117 60%, #1a1a2e 100%);
+    border-bottom: 1px solid #2d3748;
+    padding: 60px 40px 50px;
+    text-align: center;
+  }
+  .hero h1 { font-size: 2.4rem; font-weight: 700; color: #fff; margin-bottom: 10px; }
+  .hero h1 span { color: #60a5fa; }
+  .hero p { color: #94a3b8; font-size: 1.05rem; margin-bottom: 24px; }
+  .badges { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 20px; }
+  .badge {
+    padding: 5px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .badge-blue   { background: #1d4ed8; color: #bfdbfe; }
+  .badge-orange { background: #92400e; color: #fde68a; }
+  .badge-green  { background: #065f46; color: #6ee7b7; }
+  .badge-yellow { background: #78350f; color: #fde68a; }
+  .badge-purple { background: #4c1d95; color: #ddd6fe; }
+  .author-line { color: #64748b; font-size: 0.9rem; }
+  .author-line a { color: #60a5fa; text-decoration: none; }
+  .author-line a:hover { text-decoration: underline; }
+
+  /* ── Layout ── */
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px 80px; }
+
+  /* ── Section ── */
+  .section { margin-top: 60px; }
+  .section-title {
+    font-size: 1.5rem; font-weight: 700; color: #f1f5f9;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #2d3748;
+    margin-bottom: 24px;
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  /* ── Cards ── */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+  .card {
+    background: #1e2535; border: 1px solid #2d3748; border-radius: 10px;
+    padding: 20px; transition: border-color 0.2s;
+  }
+  .card:hover { border-color: #60a5fa; }
+  .card-icon { font-size: 1.8rem; margin-bottom: 10px; }
+  .card-title { font-weight: 700; color: #f1f5f9; margin-bottom: 6px; font-size: 0.95rem; }
+  .card-desc { color: #94a3b8; font-size: 0.85rem; }
+
+  /* ── Tables ── */
+  .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid #2d3748; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  thead { background: #1e2535; }
+  th { padding: 12px 16px; text-align: left; color: #60a5fa; font-weight: 600; white-space: nowrap; }
+  td { padding: 11px 16px; border-top: 1px solid #1e2535; color: #cbd5e1; }
+  tr:hover td { background: #1e2535; }
+  tr:nth-child(even) td { background: #161b27; }
+  tr:nth-child(even):hover td { background: #1e2535; }
+
+  /* ── Diff blocks ── */
+  .diff-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media(max-width:640px){ .diff-grid { grid-template-columns: 1fr; } }
+  .diff-box { border-radius: 10px; padding: 20px; }
+  .diff-old { background: #2d1515; border: 1px solid #7f1d1d; }
+  .diff-new { background: #0d2d1a; border: 1px solid #14532d; }
+  .diff-box h4 { font-size: 0.85rem; font-weight: 700; margin-bottom: 12px; }
+  .diff-old h4 { color: #fca5a5; }
+  .diff-new h4 { color: #86efac; }
+  .diff-box ul { list-style: none; }
+  .diff-box li { font-size: 0.84rem; padding: 4px 0; color: #cbd5e1; }
+  .diff-old li::before { content: "✗  "; color: #f87171; }
+  .diff-new li::before { content: "✓  "; color: #4ade80; }
+
+  /* ── Chips ── */
+  .chip-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .chip {
+    background: #1e2535; border: 1px solid #2d3748;
+    border-radius: 20px; padding: 4px 12px;
+    font-size: 0.8rem; color: #94a3b8;
+  }
+
+  /* ── Insight cards ── */
+  .insight-list { display: flex; flex-direction: column; gap: 12px; }
+  .insight {
+    display: flex; gap: 14px; align-items: flex-start;
+    background: #1e2535; border: 1px solid #2d3748;
+    border-radius: 10px; padding: 16px 20px;
+  }
+  .insight-num {
+    min-width: 32px; height: 32px; border-radius: 50%;
+    background: #1d4ed8; color: #bfdbfe;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+  }
+  .insight-text { color: #cbd5e1; font-size: 0.92rem; }
+  .insight-text strong { color: #f1f5f9; }
+
+  /* ── Code block ── */
+  pre {
+    background: #0d1117; border: 1px solid #2d3748; border-radius: 10px;
+    padding: 20px; font-size: 0.84rem; overflow-x: auto;
+    color: #86efac; line-height: 1.6; margin-top: 12px;
+  }
+
+  /* ── Segment pills ── */
+  .seg-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 12px; }
+  .seg-card { border-radius: 10px; padding: 16px; text-align: center; }
+  .seg-card .seg-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+  .seg-card .seg-score { font-size: 0.78rem; opacity: 0.8; }
+  .seg-champions    { background: #052e16; border: 1px solid #16a34a; color: #4ade80; }
+  .seg-loyal        { background: #0d2d1a; border: 1px solid #22c55e; color: #86efac; }
+  .seg-potential    { background: #2d1f00; border: 1px solid #d97706; color: #fbbf24; }
+  .seg-atrisk       { background: #2d1500; border: 1px solid #ea580c; color: #fb923c; }
+  .seg-lost         { background: #2d0f0f; border: 1px solid #dc2626; color: #f87171; }
+
+  /* ── Plot grid ── */
+  .plot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+  .plot-card {
+    background: #1e2535; border: 1px solid #2d3748; border-radius: 10px;
+    padding: 16px; display: flex; gap: 14px; align-items: center;
+  }
+  .plot-num {
+    min-width: 36px; height: 36px; background: #1d4ed8; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; color: #bfdbfe; font-size: 0.85rem; flex-shrink: 0;
+  }
+  .plot-info .plot-title { font-weight: 600; color: #f1f5f9; font-size: 0.88rem; }
+  .plot-info .plot-desc  { color: #64748b; font-size: 0.78rem; margin-top: 2px; }
+
+  /* ── File tree ── */
+  .filetree {
+    background: #0d1117; border: 1px solid #2d3748; border-radius: 10px;
+    padding: 20px; font-family: monospace; font-size: 0.84rem; color: #94a3b8;
+    line-height: 1.9;
+  }
+  .filetree .new  { color: #4ade80; }
+  .filetree .mod  { color: #fbbf24; }
+  .filetree .orig { color: #64748b; }
+  .filetree .dir  { color: #60a5fa; }
+
+  /* ── Commit log ── */
+  .commit-list { display: flex; flex-direction: column; gap: 10px; }
+  .commit {
+    display: flex; gap: 14px; align-items: flex-start;
+    background: #1e2535; border: 1px solid #2d3748;
+    border-radius: 8px; padding: 12px 16px;
+  }
+  .commit-hash { font-family: monospace; font-size: 0.8rem; color: #60a5fa; min-width: 70px; }
+  .commit-msg  { font-size: 0.88rem; color: #cbd5e1; }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center; padding: 30px;
+    border-top: 1px solid #2d3748; color: #475569; font-size: 0.85rem;
+    margin-top: 40px;
+  }
+  footer a { color: #60a5fa; text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>🛍️ Customer Shopping <span>Behavior Analysis</span></h1>
+  <p>End-to-end Data Analytics Portfolio Project · Python · SQL · Power BI</p>
+  <div class="badges">
+    <span class="badge badge-blue">Python 3.13</span>
+    <span class="badge badge-orange">Jupyter Notebook</span>
+    <span class="badge badge-blue">PostgreSQL · MySQL · MSSQL</span>
+    <span class="badge badge-yellow">Power BI</span>
+    <span class="badge badge-purple">scikit-learn</span>
+    <span class="badge badge-green">MIT License</span>
+  </div>
+  <div class="author-line">
+    Built by <strong>Ankit Kumar</strong> &nbsp;|&nbsp;
+    <a href="https://github.com/hrts51" target="_blank">github.com/hrts51</a> &nbsp;|&nbsp;
+    <a href="https://github.com/hrts51/customer-trends-data-analysis-SQL-Python-PowerBI" target="_blank">View Repository →</a>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="section">
+    <div class="section-title">📌 Project Overview</div>
+    <div class="card-grid">
+      <div class="card"><div class="card-icon">🧹</div><div class="card-title">Data Cleaning & EDA</div><div class="card-desc">pandas · seaborn · matplotlib<br/>Cleaned dataset + 9 charts</div></div>
+      <div class="card"><div class="card-icon">⚙️</div><div class="card-title">Feature Engineering</div><div class="card-desc">Age group · Spend tier · Loyalty tier · Frequency days</div></div>
+      <div class="card"><div class="card-icon">🎯</div><div class="card-title">RFM Segmentation</div><div class="card-desc">scikit-learn<br/>5 customer segments scored 1–15</div></div>
+      <div class="card"><div class="card-icon">🤖</div><div class="card-title">Churn Prediction</div><div class="card-desc">Random Forest Classifier<br/>Per-customer churn probability</div></div>
+      <div class="card"><div class="card-icon">🗄️</div><div class="card-title">SQL Analytics</div><div class="card-desc">PostgreSQL / MySQL / MSSQL<br/>15 business queries · 4 sections</div></div>
+      <div class="card"><div class="card-icon">📊</div><div class="card-title">Power BI Dashboard</div><div class="card-desc">Interactive .pbix dashboard<br/>Connect via SQL or CSV</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">📋 Dataset Overview</div>
+    <div class="card-grid" style="grid-template-columns: repeat(4,1fr); margin-bottom: 20px;">
+      <div class="card" style="text-align:center;"><div style="font-size:2rem;font-weight:700;color:#60a5fa;">3,900</div><div class="card-desc">Customer Transactions</div></div>
+      <div class="card" style="text-align:center;"><div style="font-size:2rem;font-weight:700;color:#4ade80;">18</div><div class="card-desc">Original Columns</div></div>
+      <div class="card" style="text-align:center;"><div style="font-size:2rem;font-weight:700;color:#fbbf24;">24</div><div class="card-desc">Final Columns</div></div>
+      <div class="card" style="text-align:center;"><div style="font-size:2rem;font-weight:700;color:#f87171;">37</div><div class="card-desc">Missing Values Fixed</div></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Column</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>Customer ID</td><td>int</td><td>Unique customer identifier (1–3900)</td></tr>
+          <tr><td>Age</td><td>int</td><td>Customer age (18–70)</td></tr>
+          <tr><td>Gender</td><td>string</td><td>Male / Female</td></tr>
+          <tr><td>Item Purchased</td><td>string</td><td>25 unique product names</td></tr>
+          <tr><td>Category</td><td>string</td><td>Clothing · Footwear · Outerwear · Accessories</td></tr>
+          <tr><td>Purchase Amount (USD)</td><td>int</td><td>Transaction value ($20–$100)</td></tr>
+          <tr><td>Location</td><td>string</td><td>50 US states</td></tr>
+          <tr><td>Size</td><td>string</td><td>S / M / L / XL</td></tr>
+          <tr><td>Color</td><td>string</td><td>25 color options</td></tr>
+          <tr><td>Season</td><td>string</td><td>Spring / Summer / Fall / Winter</td></tr>
+          <tr><td>Review Rating</td><td>float</td><td>2.5–5.0 · had 37 missing values (now fixed)</td></tr>
+          <tr><td>Subscription Status</td><td>string</td><td>Yes / No</td></tr>
+          <tr><td>Shipping Type</td><td>string</td><td>6 types (Free, Express, Standard, etc.)</td></tr>
+          <tr><td>Discount Applied</td><td>string</td><td>Yes / No</td></tr>
+          <tr><td>Promo Code Used</td><td>string</td><td>Identical to Discount Applied — dropped</td></tr>
+          <tr><td>Previous Purchases</td><td>int</td><td>Count of past purchases (1–50)</td></tr>
+          <tr><td>Payment Method</td><td>string</td><td>6 methods (PayPal, Credit Card, Venmo, etc.)</td></tr>
+          <tr><td>Frequency of Purchases</td><td>string</td><td>Weekly / Monthly / Annually / etc.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🗂️ What Was Already Done (Original)</div>
+    <div class="diff-grid">
+      <div>
+        <h4 style="color:#f1f5f9; margin-bottom:14px; font-size:1rem;">📓 Python Notebook</h4>
+        <div class="chip-list">
+          <span class="chip">Load CSV with pandas</span>
+          <span class="chip">df.info() & df.describe()</span>
+          <span class="chip">Null check</span>
+          <span class="chip">Impute Review Rating (category median)</span>
+          <span class="chip">Rename columns to snake_case</span>
+          <span class="chip">Drop promo_code_used</span>
+          <span class="chip">Create age_group (pd.qcut)</span>
+          <span class="chip">Create purchase_frequency_days</span>
+          <span class="chip">Load to PostgreSQL via sqlalchemy</span>
+          <span class="chip">MySQL & MSSQL commented code</span>
+        </div>
+      </div>
+      <div>
+        <h4 style="color:#f1f5f9; margin-bottom:14px; font-size:1rem;">🗄️ SQL Queries (10 total)</h4>
+        <div class="chip-list">
+          <span class="chip">Q1 Revenue by gender</span>
+          <span class="chip">Q2 Discount buyers above avg</span>
+          <span class="chip">Q3 Top 5 products by rating</span>
+          <span class="chip">Q4 Standard vs Express shipping</span>
+          <span class="chip">Q5 Subscribed vs not spend</span>
+          <span class="chip">Q6 Top 5 discount rate products</span>
+          <span class="chip">Q7 New/Returning/Loyal segments</span>
+          <span class="chip">Q8 Top 3 per category (ROW_NUMBER)</span>
+          <span class="chip">Q9 Repeat buyers vs subscription</span>
+          <span class="chip">Q10 Revenue by age group</span>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:16px;" class="diff-grid">
+      <div>
+        <h4 style="color:#f1f5f9; margin-bottom:14px; font-size:1rem;">📁 Other Files</h4>
+        <div class="chip-list">
+          <span class="chip">customer_behavior_dashboard.pbix</span>
+          <span class="chip">Business Problem Document.pdf</span>
+          <span class="chip">Customer Shopping Behavior Analysis.pdf</span>
+          <span class="chip">Customer-Shopping-Behavior-Analysis.pptx</span>
+          <span class="chip">LICENSE</span>
+        </div>
+      </div>
+      <div>
+        <h4 style="color:#f1f5f9; margin-bottom:14px; font-size:1rem;">❌ What Was Missing</h4>
+        <div class="chip-list">
+          <span class="chip" style="border-color:#7f1d1d;color:#fca5a5;">No requirements.txt</span>
+          <span class="chip" style="border-color:#7f1d1d;color:#fca5a5;">No .gitignore</span>
+          <span class="chip" style="border-color:#7f1d1d;color:#fca5a5;">No EDA visualizations</span>
+          <span class="chip" style="border-color:#7f1d1d;color:#fca5a5;">No RFM segmentation</span>
+          <span class="chip" style="border-color:#7f1d1d;color:#fca5a5;">No churn model</span>
+          <span class="chip" style="border-color:#7f1d1d;color:#fca5a5;">No cleaned CSV export</span>
+          <span class="chip" style="border-color:#7f1d1d;color:#fca5a5;">No setup instructions</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">✨ What Was Improved</div>
+
+    <h3 style="color:#f1f5f9; margin-bottom:14px; font-size:1rem;">New Files Added</h3>
+    <div class="table-wrap" style="margin-bottom:30px;">
+      <table>
+        <thead><tr><th>File</th><th>Purpose</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td><code>requirements.txt</code></td><td>Pinned Python dependencies for reproducible setup</td><td style="color:#4ade80;">✅ New</td></tr>
+          <tr><td><code>.gitignore</code></td><td>Excludes venv, secrets, OS files, Jupyter checkpoints</td><td style="color:#4ade80;">✅ New</td></tr>
+          <tr><td><code>customer_shopping_behavior_cleaned.csv</code></td><td>Cleaned + enriched dataset (24 cols) for Power BI</td><td style="color:#4ade80;">✅ New</td></tr>
+          <tr><td><code>plots/</code> (9 PNG files)</td><td>All EDA and model charts saved as images</td><td style="color:#4ade80;">✅ New</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="color:#f1f5f9; margin-bottom:14px; font-size:1rem;">New Engineered Features</h3>
+    <div class="table-wrap" style="margin-bottom:30px;">
+      <table>
+        <thead><tr><th>Feature</th><th>Logic</th></tr></thead>
+        <tbody>
+          <tr><td><code>spend_tier</code></td><td>Low (&lt;$40) / Medium ($40–$70) / High (&gt;$70)</td></tr>
+          <tr><td><code>loyalty_tier</code></td><td>New (1 purchase) / Returning (2–10) / Loyal (11+)</td></tr>
+          <tr><td><code>rfm_r, rfm_f, rfm_m</code></td><td>RFM individual scores (1–5 each)</td></tr>
+          <tr><td><code>rfm_score</code></td><td>Combined RFM total score (3–15)</td></tr>
+          <tr><td><code>rfm_segment</code></td><td>Champions / Loyal / Potential / At Risk / Lost</td></tr>
+          <tr><td><code>churn_probability</code></td><td>Random Forest predicted churn probability (0.0–1.0)</td></tr>
+          <tr><td><code>is_churn</code></td><td>Rule-based label: infrequent + low rating + not subscribed</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="color:#f1f5f9; margin-bottom:14px; font-size:1rem;">EDA Visualizations (9 charts)</h3>
+    <div class="plot-grid" style="margin-bottom:30px;">
+      <div class="plot-card"><div class="plot-num">01</div><div class="plot-info"><div class="plot-title">Purchase Distribution & Gender Revenue</div><div class="plot-desc">Histogram with mean/median + bar chart</div></div></div>
+      <div class="plot-card"><div class="plot-num">02</div><div class="plot-info"><div class="plot-title">Revenue by Category & Season</div><div class="plot-desc">Bar charts for category and seasonal trends</div></div></div>
+      <div class="plot-card"><div class="plot-num">03</div><div class="plot-info"><div class="plot-title">Age Group & Subscription</div><div class="plot-desc">Revenue by age + subscription pie chart</div></div></div>
+      <div class="plot-card"><div class="plot-num">04</div><div class="plot-info"><div class="plot-title">Shipping, Payment & Discount</div><div class="plot-desc">3-panel: shipping avg, payment usage, discount impact</div></div></div>
+      <div class="plot-card"><div class="plot-num">05</div><div class="plot-info"><div class="plot-title">Top Products & Ratings</div><div class="plot-desc">Top 10 by revenue + avg rating by category</div></div></div>
+      <div class="plot-card"><div class="plot-num">06</div><div class="plot-info"><div class="plot-title">Correlation Heatmap</div><div class="plot-desc">Lower-triangle matrix for all numeric features</div></div></div>
+      <div class="plot-card"><div class="plot-num">07</div><div class="plot-info"><div class="plot-title">Loyalty × Subscription Heatmap</div><div class="plot-desc">Avg spend across loyalty + subscription combos</div></div></div>
+      <div class="plot-card"><div class="plot-num">08</div><div class="plot-info"><div class="plot-title">RFM Segments</div><div class="plot-desc">Segment counts + avg monetary per segment</div></div></div>
+      <div class="plot-card"><div class="plot-num">09</div><div class="plot-info"><div class="plot-title">Churn Model</div><div class="plot-desc">Confusion matrix + feature importance</div></div></div>
+    </div>
+
+    <h3 style="color:#f1f5f9; margin-bottom:14px; font-size:1rem;">RFM Customer Segments</h3>
+    <div class="seg-grid" style="margin-bottom:30px;">
+      <div class="seg-card seg-champions"><div class="seg-name">🏆 Champions</div><div class="seg-score">Score 13–15 · Best customers</div></div>
+      <div class="seg-card seg-loyal"><div class="seg-name">💚 Loyal Customers</div><div class="seg-score">Score 10–12 · Regular buyers</div></div>
+      <div class="seg-card seg-potential"><div class="seg-name">⭐ Potential Loyalists</div><div class="seg-score">Score 7–9 · Need nurturing</div></div>
+      <div class="seg-card seg-atrisk"><div class="seg-name">⚠️ At Risk</div><div class="seg-score">Score 5–6 · Declining activity</div></div>
+      <div class="seg-card seg-lost"><div class="seg-name">❌ Lost</div><div class="seg-score">Score &lt;5 · Inactive</div></div>
+    </div>
+
+    <h3 style="color:#f1f5f9; margin-bottom:14px; font-size:1rem;">SQL — 5 New Queries Added</h3>
+    <div class="table-wrap" style="margin-bottom:30px;">
+      <table>
+        <thead><tr><th>#</th><th>Query</th><th>Technique</th></tr></thead>
+        <tbody>
+          <tr><td>Q11</td><td>Running total of revenue + percentile rank per customer</td><td>SUM() OVER · RANK() OVER</td></tr>
+          <tr><td>Q12</td><td>Top 5 US states by total revenue</td><td>GROUP BY · ORDER BY</td></tr>
+          <tr><td>Q13</td><td>Payment method by avg spend and total revenue</td><td>Aggregation</td></tr>
+          <tr><td>Q14</td><td>Season × Category revenue cross-tab (pivot)</td><td>CASE WHEN conditional aggregation</td></tr>
+          <tr><td>Q15</td><td>Full RFM customer scoring in SQL</td><td>NTILE · CASE WHEN · CTEs</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="color:#f1f5f9; margin-bottom:14px; font-size:1rem;">README — Before vs After</h3>
+    <div class="diff-grid">
+      <div class="diff-box diff-old">
+        <h4>Before</h4>
+        <ul>
+          <li>Original author credits throughout</li>
+          <li>No setup/install instructions</li>
+          <li>No project structure tree</li>
+          <li>No dataset column summary</li>
+          <li>No key insights section</li>
+          <li>No tech stack section</li>
+          <li>No badges</li>
+        </ul>
+      </div>
+      <div class="diff-box diff-new">
+        <h4>After</h4>
+        <ul>
+          <li>Your name & GitHub link</li>
+          <li>Full Quick Start guide (5 steps)</li>
+          <li>Complete directory tree</li>
+          <li>Dataset column table + new features</li>
+          <li>6 business insights listed</li>
+          <li>Tech stack section</li>
+          <li>Python · SQL · Power BI · License badges</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔍 Key Business Insights</div>
+    <div class="insight-list">
+      <div class="insight"><div class="insight-num">1</div><div class="insight-text"><strong>Gender Revenue Gap is Smaller Than Expected —</strong> Male customers are 68% of transactions but their per-transaction spend is only marginally higher than female customers.</div></div>
+      <div class="insight"><div class="insight-num">2</div><div class="insight-text"><strong>Clothing Dominates, Spring Peaks —</strong> Clothing is the top revenue category across all seasons. Spring drives the highest seasonal revenue.</div></div>
+      <div class="insight"><div class="insight-num">3</div><div class="insight-text"><strong>Subscriptions Drive Loyalty —</strong> Subscribed customers spend more per transaction and have significantly more previous purchases than non-subscribers.</div></div>
+      <div class="insight"><div class="insight-num">4</div><div class="insight-text"><strong>Champions Are the Revenue Core —</strong> The top RFM segment is ~20% of customers but drives a disproportionately large share of total revenue.</div></div>
+      <div class="insight"><div class="insight-num">5</div><div class="insight-text"><strong>Churn Profile is Clear and Actionable —</strong> At-risk customers are identifiable: infrequent buyers, low review ratings, not subscribed.</div></div>
+      <div class="insight"><div class="insight-num">6</div><div class="insight-text"><strong>Discounts Don't Always Lift Spend —</strong> Discount buyers don't consistently spend more than non-discount buyers on average — discount strategy needs review.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🗂️ File Inventory</div>
+    <div class="filetree">
+      customer-trends-data-analysis-SQL-Python-PowerBI/<br/>
+      │<br/>
+      ├── <span class="mod">📓 Customer_Shopping_Behavior_Analysis.ipynb</span> &nbsp;← Improved notebook<br/>
+      ├── <span class="mod">🗄️ &nbsp;customer_behavior_sql_queries.sql</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← 15 queries · 4 sections<br/>
+      ├── <span class="orig">📊 customer_behavior_dashboard.pbix</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← Power BI dashboard<br/>
+      │<br/>
+      ├── <span class="dir">📁 plots/</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← NEW<br/>
+      │&nbsp;&nbsp;&nbsp;├── <span class="new">01_purchase_distribution_gender.png</span><br/>
+      │&nbsp;&nbsp;&nbsp;├── <span class="new">02_revenue_category_season.png</span><br/>
+      │&nbsp;&nbsp;&nbsp;├── <span class="new">03_age_group_subscription.png</span><br/>
+      │&nbsp;&nbsp;&nbsp;├── <span class="new">04_shipping_payment_discount.png</span><br/>
+      │&nbsp;&nbsp;&nbsp;├── <span class="new">05_products_ratings.png</span><br/>
+      │&nbsp;&nbsp;&nbsp;├── <span class="new">06_correlation_heatmap.png</span><br/>
+      │&nbsp;&nbsp;&nbsp;├── <span class="new">07_loyalty_subscription_heatmap.png</span><br/>
+      │&nbsp;&nbsp;&nbsp;├── <span class="new">08_rfm_segments.png</span><br/>
+      │&nbsp;&nbsp;&nbsp;└── <span class="new">09_churn_model.png</span><br/>
+      │<br/>
+      ├── <span class="orig">📄 customer_shopping_behavior.csv</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← Raw dataset (3,900 rows)<br/>
+      ├── <span class="new">📄 customer_shopping_behavior_cleaned.csv</span> &nbsp;&nbsp;← NEW — 24 cols enriched<br/>
+      ├── <span class="new">📋 requirements.txt</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← NEW<br/>
+      ├── <span class="new">🔒 .gitignore</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← NEW<br/>
+      ├── <span class="orig">📄 Business Problem Document.pdf</span><br/>
+      ├── <span class="orig">📄 Customer Shopping Behavior Analysis.pdf</span><br/>
+      ├── <span class="orig">📄 Customer-Shopping-Behavior-Analysis.pptx</span><br/>
+      └── <span class="orig">📜 LICENSE</span><br/>
+      <br/>
+      <span style="color:#4ade80;">■</span> Green = New &nbsp;&nbsp;
+      <span style="color:#fbbf24;">■</span> Yellow = Modified &nbsp;&nbsp;
+      <span style="color:#64748b;">■</span> Grey = Original / Unchanged
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🚀 Quick Start</div>
+    <pre>
+# 1. Clone the repo
+git clone https://github.com/hrts51/customer-trends-data-analysis-SQL-Python-PowerBI.git
+cd customer-trends-data-analysis-SQL-Python-PowerBI
+
+# 2. Set up environment (Conda recommended)
+conda create -n customer-analysis python=3.13
+conda activate customer-analysis
+pip install -r requirements.txt
+
+# 3. Run the notebook
+jupyter notebook Customer_Shopping_Behavior_Analysis.ipynb
+
+# 4. Load data to SQL — uncomment the relevant DB section in the notebook
+
+# 5. Open Power BI — connect to SQL DB or the cleaned CSV
+    </pre>
+  </div>
+
+  <div class="section">
+    <div class="section-title">📝 Git Commit History</div>
+    <div class="commit-list">
+      <div class="commit"><div class="commit-hash">f1662ec</div><div class="commit-msg">Update author details to Ankit Kumar (hrts51)</div></div>
+      <div class="commit"><div class="commit-hash">0a25dc7</div><div class="commit-msg">Improve project: EDA visualizations, RFM segmentation, churn prediction, enhanced SQL, requirements.txt, .gitignore, updated README</div></div>
+      <div class="commit"><div class="commit-hash">c84947a</div><div class="commit-msg">Update README.md</div></div>
+      <div class="commit"><div class="commit-hash">ab5bf4f</div><div class="commit-msg">Update README.md</div></div>
+      <div class="commit"><div class="commit-hash">da66720</div><div class="commit-msg">Update README.md</div></div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Built by <strong>Ankit Kumar</strong> &nbsp;·&nbsp;
+  <a href="https://github.com/hrts51" target="_blank">github.com/hrts51</a> &nbsp;·&nbsp;
+  <a href="https://github.com/hrts51/customer-trends-data-analysis-SQL-Python-PowerBI" target="_blank">View Repository</a>
+</footer>
+
+</body>
+</html>

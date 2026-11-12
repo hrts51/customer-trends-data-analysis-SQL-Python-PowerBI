@@ -1,0 +1,62 @@
+# ─── Python ───────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.Python
+*.so
+
+# ─── Virtual environments ─────────────────────────────────────────────────────
+venv/
+.venv/
+env/
+ENV/
+.env/
+.conda/
+
+# ─── Jupyter Notebook ─────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ─── Environment & secrets ────────────────────────────────────────────────────
+.env
+.env.*
+*.env
+secrets.py
+db_config.py
+
+# ─── OS generated files ───────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# ─── IDE / Editor ─────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ─── Data files (keep CSV in repo but ignore large exports) ───────────────────
+*.xlsx
+*.parquet
+# Uncomment below to also ignore the raw CSV if it's large:
+# *.csv
+
+# ─── SQL exports & dumps ──────────────────────────────────────────────────────
+*.sql.bak
+*.dump
+*.backup
+
+# ─── Logs & temp ──────────────────────────────────────────────────────────────
+*.log
+*.tmp
+*.temp
+logs/

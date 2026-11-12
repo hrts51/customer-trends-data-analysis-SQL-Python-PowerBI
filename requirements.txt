@@ -1,0 +1,25 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Customer Shopping Behavior Analysis — Python Dependencies
+# Tested on Python 3.13 (conda base)
+# Install: pip install -r requirements.txt
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Core data analysis
+pandas==3.1.0
+numpy>=1.26.0
+matplotlib==3.11.2
+seaborn==0.13.2
+
+# Jupyter notebook
+jupyter>=1.1.1
+notebook>=7.0.0
+ipykernel>=6.29.0
+
+# SQL connectivity
+sqlalchemy==2.0.52
+psycopg2-binary>=2.9.9   # PostgreSQL driver (requires Python <= 3.13)
+pymysql==1.1.1            # MySQL driver (pure Python, works on all versions)
+
+# Extras
+openpyxl==3.1.5           # Excel export support
+scikit-learn==1.7.1       # ML enhancements: RFM segmentation, churn prediction
