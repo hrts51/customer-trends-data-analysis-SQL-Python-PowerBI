@@ -4,7 +4,11 @@
 ![Jupyter](https://img.shields.io/badge/Jupyter-Notebook-orange?logo=jupyter)
 ![SQL](https://img.shields.io/badge/SQL-PostgreSQL%20%7C%20MySQL%20%7C%20MSSQL-blue?logo=postgresql)
 ![Power BI](https://img.shields.io/badge/Power%20BI-Dashboard-yellow?logo=powerbi)
+![Streamlit](https://img.shields.io/badge/Streamlit-App-red?logo=streamlit)
 ![License](https://img.shields.io/badge/License-MIT-green)
+[![📓 Notebook CI](https://github.com/hrts51/customer-trends-data-analysis-SQL-Python-PowerBI/actions/workflows/notebook_ci.yml/badge.svg)](https://github.com/hrts51/customer-trends-data-analysis-SQL-Python-PowerBI/actions/workflows/notebook_ci.yml)
+[![🔍 Code Quality](https://github.com/hrts51/customer-trends-data-analysis-SQL-Python-PowerBI/actions/workflows/code_quality.yml/badge.svg)](https://github.com/hrts51/customer-trends-data-analysis-SQL-Python-PowerBI/actions/workflows/code_quality.yml)
+[![🚀 Streamlit Test](https://github.com/hrts51/customer-trends-data-analysis-SQL-Python-PowerBI/actions/workflows/streamlit_test.yml/badge.svg)](https://github.com/hrts51/customer-trends-data-analysis-SQL-Python-PowerBI/actions/workflows/streamlit_test.yml)
 
 An end-to-end data analytics portfolio project that mirrors real corporate analyst workflows — from raw data to actionable business insights. Covers data cleaning, exploratory data analysis, RFM customer segmentation, churn prediction, SQL analytics, and Power BI visualization.
 
@@ -27,6 +31,11 @@ An end-to-end data analytics portfolio project that mirrors real corporate analy
 
 ```
 customer-trends-data-analysis-SQL-Python-PowerBI/
+│
+├── 📁 .github/workflows/
+│   ├── notebook_ci.yml          ← Auto-runs notebook on push
+│   ├── code_quality.yml         ← Linting + security scan
+│   └── streamlit_test.yml       ← Verifies app loads correctly
 │
 ├── 📁 data/
 │   ├── raw/

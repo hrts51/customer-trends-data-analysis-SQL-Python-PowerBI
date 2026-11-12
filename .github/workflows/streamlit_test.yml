@@ -1,0 +1,92 @@
+name: 🚀 Streamlit App Test
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'streamlit_app/**'
+      - 'data/**'
+      - '.github/workflows/streamlit_test.yml'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test-app:
+    name: Verify Streamlit App Loads
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install \
+            streamlit==1.45.1 \
+            pandas \
+            numpy \
+            matplotlib \
+            seaborn \
+            scikit-learn \
+            plotly \
+            scipy
+
+      - name: Verify CLV module runs correctly
+        run: |
+          cd streamlit_app
+          python -c "
+          import sys, os
+          sys.path.insert(0, '.')
+          import pandas as pd
+          from clv_model import compute_clv, train_clv_model
+
+          df = pd.read_csv('../data/raw/customer_shopping_behavior.csv')
+          df.columns = df.columns.str.lower().str.replace(' ', '_')
+          df = df.rename(columns={'purchase_amount_(usd)': 'purchase_amount'})
+          df['review_rating'] = df.groupby('category')['review_rating'].transform(lambda x: x.fillna(x.median()))
+
+          df = compute_clv(df)
+          assert 'clv_estimated' in df.columns, 'clv_estimated column missing'
+          assert 'clv_tier' in df.columns, 'clv_tier column missing'
+          assert df['clv_estimated'].isna().sum() == 0, 'CLV has null values'
+
+          model, X_test, y_test, y_pred, feat_names, metrics = train_clv_model(df)
+          assert metrics['R² Score'] > 0.5, f'R² too low: {metrics[\"R² Score\"]}'
+          print(f'✅ CLV model OK — R²={metrics[\"R² Score\"]}')
+          "
+
+      - name: Verify A/B test module runs correctly
+        run: |
+          cd streamlit_app
+          python -c "
+          import sys
+          sys.path.insert(0, '.')
+          import pandas as pd
+          from ab_test import run_all_tests
+
+          df = pd.read_csv('../data/raw/customer_shopping_behavior.csv')
+          df.columns = df.columns.str.lower().str.replace(' ', '_')
+          df = df.rename(columns={'purchase_amount_(usd)': 'purchase_amount'})
+          df['review_rating'] = df.groupby('category')['review_rating'].transform(lambda x: x.fillna(x.median()))
+
+          results = run_all_tests(df)
+          assert len(results) == 6, f'Expected 6 tests, got {len(results)}'
+          for name, r in results.items():
+              assert 'p_value' in r, f'Missing p_value in {name}'
+              assert 'cohens_d' in r, f'Missing cohens_d in {name}'
+          print(f'✅ A/B test module OK — {len(results)} tests passed')
+          "
+
+      - name: Check Streamlit app syntax
+        run: |
+          cd streamlit_app
+          python -m py_compile app.py
+          echo "✅ app.py syntax OK"

@@ -1,0 +1,88 @@
+name: 🔍 Code Quality
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'streamlit_app/**'
+      - '.github/workflows/code_quality.yml'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Lint Python Files
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. Checkout ───────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. Python setup ───────────────────────────────────────────────────
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      # ── 3. Install linting tools ──────────────────────────────────────────
+      - name: Install linting tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 flake8-bugbear
+
+      # ── 4. Run flake8 ─────────────────────────────────────────────────────
+      - name: Run flake8
+        run: |
+          flake8 streamlit_app/ \
+            --max-line-length=120 \
+            --extend-ignore=E203,W503,E501 \
+            --exclude=__pycache__ \
+            --statistics \
+            --count
+        continue-on-error: true   # report issues but don't fail the build
+
+      # ── 5. Check imports are valid ────────────────────────────────────────
+      - name: Install app dependencies
+        run: |
+          pip install \
+            pandas \
+            numpy \
+            matplotlib \
+            seaborn \
+            scikit-learn \
+            plotly \
+            scipy
+
+      - name: Validate Python imports
+        run: |
+          python -c "import pandas; import numpy; import matplotlib; import seaborn; import sklearn; import plotly; import scipy; print('✅ All core imports OK')"
+          python -c "from streamlit_app.clv_model import compute_clv, train_clv_model; print('✅ clv_model imports OK')"
+          python -c "from streamlit_app.ab_test import run_ab_test, run_all_tests; print('✅ ab_test imports OK')"
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install bandit
+        run: pip install bandit
+
+      - name: Run security scan
+        run: |
+          bandit -r streamlit_app/ \
+            -ll \
+            --exclude streamlit_app/__pycache__ \
+            -f txt \
+            --exit-zero
+        continue-on-error: true
