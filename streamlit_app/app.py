@@ -150,11 +150,12 @@ c6.metric("Churn Risk",        f"{filtered['churn_risk'].sum():,}")
 st.markdown("---")
 
 # ── Tab layout ────────────────────────────────────────────────────────────────
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "📊 Revenue Overview",
     "👥 Customer Segments",
     "🎯 RFM Analysis",
     "⚠️ Churn Risk",
+    "🗺️ Geographic Map",
     "📋 Raw Data"
 ])
 
@@ -446,9 +447,140 @@ with tab4:
 
 
 # ════════════════════════════════════════════════════════
-# TAB 5 — Raw Data
+# TAB 5 — Geographic Map
 # ════════════════════════════════════════════════════════
 with tab5:
+    st.markdown("Revenue, customer count and avg spend mapped across all 50 US states.")
+
+    # Full state name → abbreviation mapping
+    state_abbrev = {
+        "Alabama":"AL","Alaska":"AK","Arizona":"AZ","Arkansas":"AR","California":"CA",
+        "Colorado":"CO","Connecticut":"CT","Delaware":"DE","Florida":"FL","Georgia":"GA",
+        "Hawaii":"HI","Idaho":"ID","Illinois":"IL","Indiana":"IN","Iowa":"IA",
+        "Kansas":"KS","Kentucky":"KY","Louisiana":"LA","Maine":"ME","Maryland":"MD",
+        "Massachusetts":"MA","Michigan":"MI","Minnesota":"MN","Mississippi":"MS",
+        "Missouri":"MO","Montana":"MT","Nebraska":"NE","Nevada":"NV","New Hampshire":"NH",
+        "New Jersey":"NJ","New Mexico":"NM","New York":"NY","North Carolina":"NC",
+        "North Dakota":"ND","Ohio":"OH","Oklahoma":"OK","Oregon":"OR","Pennsylvania":"PA",
+        "Rhode Island":"RI","South Carolina":"SC","South Dakota":"SD","Tennessee":"TN",
+        "Texas":"TX","Utah":"UT","Vermont":"VT","Virginia":"VA","Washington":"WA",
+        "West Virginia":"WV","Wisconsin":"WI","Wyoming":"WY"
+    }
+
+    state_data = filtered.groupby("location").agg(
+        total_revenue   = ("purchase_amount", "sum"),
+        total_customers = ("customer_id",     "count"),
+        avg_spend       = ("purchase_amount", "mean"),
+        avg_rating      = ("review_rating",   "mean"),
+        churn_count     = ("churn_risk",      "sum")
+    ).reset_index()
+    state_data.columns = ["state","total_revenue","total_customers","avg_spend","avg_rating","churn_count"]
+    state_data["state_code"]   = state_data["state"].map(state_abbrev)
+    state_data["avg_spend"]    = state_data["avg_spend"].round(1)
+    state_data["avg_rating"]   = state_data["avg_rating"].round(2)
+    state_data["churn_rate"]   = (state_data["churn_count"] / state_data["total_customers"] * 100).round(1)
+    state_data["revenue_fmt"]  = state_data["total_revenue"].apply(lambda x: f"${x:,.0f}")
+
+    map_metric = st.radio(
+        "Color map by:",
+        ["Total Revenue", "Total Customers", "Avg Spend", "Churn Rate %"],
+        horizontal=True
+    )
+
+    metric_col_map = {
+        "Total Revenue":    ("total_revenue",    "Blues",   "$%{customdata[0]:,.0f}"),
+        "Total Customers":  ("total_customers",  "Greens",  "%{customdata[1]:,}"),
+        "Avg Spend":        ("avg_spend",        "Oranges", "$%{customdata[2]:.1f}"),
+        "Churn Rate %":     ("churn_rate",       "Reds",    "%{customdata[3]:.1f}%"),
+    }
+    col, scale, _ = metric_col_map[map_metric]
+
+    fig_map = px.choropleth(
+        state_data,
+        locations="state_code",
+        locationmode="USA-states",
+        color=col,
+        scope="usa",
+        color_continuous_scale=scale,
+        hover_name="state",
+        hover_data={
+            "state_code":     False,
+            "total_revenue":  True,
+            "total_customers":True,
+            "avg_spend":      True,
+            "churn_rate":     True,
+        },
+        labels={
+            "total_revenue":   "Revenue (USD)",
+            "total_customers": "Customers",
+            "avg_spend":       "Avg Spend (USD)",
+            "churn_rate":      "Churn Rate %",
+        },
+        title=f"US States — {map_metric}"
+    )
+    fig_map.update_layout(
+        geo=dict(bgcolor="rgba(0,0,0,0)", lakecolor="rgba(0,0,0,0)",
+                 landcolor="#1e2535", showlakes=True),
+        paper_bgcolor="rgba(0,0,0,0)",
+        font_color="#cbd5e1",
+        height=520,
+        margin=dict(l=0, r=0, t=40, b=0),
+        coloraxis_colorbar=dict(tickfont=dict(color="#cbd5e1"), title=dict(font=dict(color="#cbd5e1")))
+    )
+    st.plotly_chart(fig_map, use_container_width=True)
+
+    # Top / Bottom states table
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown('<div class="section-header">🏆 Top 10 States by Revenue</div>', unsafe_allow_html=True)
+        top_states = state_data.nlargest(10, "total_revenue")[
+            ["state","total_customers","total_revenue","avg_spend","churn_rate"]
+        ].rename(columns={
+            "state":"State","total_customers":"Customers",
+            "total_revenue":"Revenue (USD)","avg_spend":"Avg Spend","churn_rate":"Churn %"
+        })
+        top_states["Revenue (USD)"] = top_states["Revenue (USD)"].apply(lambda x: f"${x:,.0f}")
+        top_states["Avg Spend"]     = top_states["Avg Spend"].apply(lambda x: f"${x:.1f}")
+        top_states["Churn %"]       = top_states["Churn %"].apply(lambda x: f"{x:.1f}%")
+        st.dataframe(top_states, use_container_width=True, hide_index=True)
+
+    with col2:
+        st.markdown('<div class="section-header">📉 Bottom 10 States by Revenue</div>', unsafe_allow_html=True)
+        bot_states = state_data.nsmallest(10, "total_revenue")[
+            ["state","total_customers","total_revenue","avg_spend","churn_rate"]
+        ].rename(columns={
+            "state":"State","total_customers":"Customers",
+            "total_revenue":"Revenue (USD)","avg_spend":"Avg Spend","churn_rate":"Churn %"
+        })
+        bot_states["Revenue (USD)"] = bot_states["Revenue (USD)"].apply(lambda x: f"${x:,.0f}")
+        bot_states["Avg Spend"]     = bot_states["Avg Spend"].apply(lambda x: f"${x:.1f}")
+        bot_states["Churn %"]       = bot_states["Churn %"].apply(lambda x: f"{x:.1f}%")
+        st.dataframe(bot_states, use_container_width=True, hide_index=True)
+
+    # Bar chart — top 15 states
+    st.markdown('<div class="section-header">Top 15 States — Revenue Breakdown</div>', unsafe_allow_html=True)
+    top15 = state_data.nlargest(15, "total_revenue").sort_values("total_revenue", ascending=True)
+    fig_bar = px.bar(
+        top15, x="total_revenue", y="state", orientation="h",
+        color="avg_spend", color_continuous_scale="Viridis",
+        labels={"total_revenue":"Revenue (USD)","state":"","avg_spend":"Avg Spend"},
+        text="total_revenue",
+        hover_data={"total_customers":True,"avg_spend":True,"churn_rate":True}
+    )
+    fig_bar.update_traces(texttemplate="$%{text:,.0f}", textposition="outside")
+    fig_bar.update_layout(
+        plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
+        font_color="#cbd5e1", height=480,
+        margin=dict(l=0,r=80,t=10,b=0),
+        coloraxis_colorbar=dict(title="Avg Spend",tickfont=dict(color="#cbd5e1"))
+    )
+    st.plotly_chart(fig_bar, use_container_width=True)
+
+
+# ════════════════════════════════════════════════════════
+# TAB 6 — Raw Data
+# ════════════════════════════════════════════════════════
+with tab6:
     st.markdown(f"**Showing {len(filtered):,} of {len(df):,} records** (after filters)")
     st.dataframe(
         filtered[[
