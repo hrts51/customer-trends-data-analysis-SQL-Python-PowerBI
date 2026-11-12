@@ -10,6 +10,9 @@
 [![🔍 Code Quality](https://github.com/hrts51/customer-trends-data-analysis-SQL-Python-PowerBI/actions/workflows/code_quality.yml/badge.svg)](https://github.com/hrts51/customer-trends-data-analysis-SQL-Python-PowerBI/actions/workflows/code_quality.yml)
 [![🚀 Streamlit Test](https://github.com/hrts51/customer-trends-data-analysis-SQL-Python-PowerBI/actions/workflows/streamlit_test.yml/badge.svg)](https://github.com/hrts51/customer-trends-data-analysis-SQL-Python-PowerBI/actions/workflows/streamlit_test.yml)
 
+## 🌐 Live Demo
+**[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://customer-trends-data-analysis-sql-python-powerbi-2ko8kfiuvtnjq.streamlit.app/)**
+
 An end-to-end data analytics portfolio project that mirrors real corporate analyst workflows — from raw data to actionable business insights. Covers data cleaning, exploratory data analysis, RFM customer segmentation, churn prediction, SQL analytics, and Power BI visualization.
 
 ---
@@ -114,6 +117,15 @@ pip install -r requirements.txt
 ```bash
 jupyter notebook notebooks/Customer_Shopping_Behavior_Analysis.ipynb
 ```
+
+### 4. Run the Streamlit Dashboard (locally)
+```bash
+cd streamlit_app
+streamlit run app.py
+# Opens at http://localhost:8501
+```
+
+> **Or use the live hosted version:** [customer-trends-data-analysis-sql-python-powerbi-2ko8kfiuvtnjq.streamlit.app](https://customer-trends-data-analysis-sql-python-powerbi-2ko8kfiuvtnjq.streamlit.app/)
 
 The notebook will:
 - Load and clean the raw dataset
