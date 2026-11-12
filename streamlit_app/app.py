@@ -11,8 +11,14 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from clv_model import compute_clv, train_clv_model
 from ab_test import run_ab_test, run_all_tests
+import os
 import warnings
 warnings.filterwarnings("ignore")
+
+# ── Resolve data path (works locally AND on Streamlit Cloud) ──────────────────
+_HERE = os.path.dirname(os.path.abspath(__file__))          # streamlit_app/
+_ROOT = os.path.dirname(_HERE)                               # repo root
+DATA_PATH = os.path.join(_ROOT, "data", "raw", "customer_shopping_behavior.csv")
 
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -48,7 +54,7 @@ st.markdown("""
 # ── Data loading & preprocessing ──────────────────────────────────────────────
 @st.cache_data
 def load_data():
-    df = pd.read_csv("../data/raw/customer_shopping_behavior.csv")
+    df = pd.read_csv(DATA_PATH)
 
     # Clean
     df.columns = df.columns.str.lower().str.replace(" ", "_")
