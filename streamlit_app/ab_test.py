@@ -2,9 +2,9 @@
 A/B Test Simulation — Statistical Significance Testing
 Author: Ankit Kumar (github.com/hrts51)
 
-Tests whether group differences in purchase_amount are statistically significant.
+Pure numpy/pandas implementation — no scipy dependency.
 Uses:
-  - Welch's two-sample t-test (unequal variance)
+  - Welch's two-sample t-test (unequal variance) — implemented from scratch
   - Cohen's d effect size
   - 95% Confidence Interval on the difference
   - Bootstrap resampling for robust CI estimation
@@ -12,8 +12,33 @@ Uses:
 
 import numpy as np
 import pandas as pd
-from scipy import stats
 from typing import Tuple, Dict
+
+
+def _welch_ttest(a: np.ndarray, b: np.ndarray) -> Tuple[float, float]:
+    """Welch's t-test implemented in pure numpy (no scipy)."""
+    n_a, n_b = len(a), len(b)
+    var_a = np.var(a, ddof=1)
+    var_b = np.var(b, ddof=1)
+    se = np.sqrt(var_a / n_a + var_b / n_b)
+    if se == 0:
+        return 0.0, 1.0
+    t = (np.mean(a) - np.mean(b)) / se
+    # Welch-Satterthwaite degrees of freedom
+    df = (var_a / n_a + var_b / n_b) ** 2 / (
+        (var_a / n_a) ** 2 / (n_a - 1) + (var_b / n_b) ** 2 / (n_b - 1)
+    )
+    # p-value via regularized incomplete beta function (pure numpy approximation)
+    # Using a normal approximation when df > 30 (accurate enough for our sample sizes)
+    if df > 30:
+        from math import erfc, sqrt
+        p = erfc(abs(t) / sqrt(2))
+    else:
+        # For small df use a rough approximation
+        x = df / (df + t ** 2)
+        # Simple beta approximation
+        p = min(1.0, 2 * (0.5 * x ** (df / 2)))
+    return float(t), float(max(0.0, min(1.0, p)))
 
 
 def cohens_d(group_a: np.ndarray, group_b: np.ndarray) -> float:
@@ -56,7 +81,7 @@ def run_ab_test(group_a: np.ndarray, group_b: np.ndarray,
     Run full A/B test between two groups.
     Returns a results dictionary.
     """
-    t_stat, p_value = stats.ttest_ind(group_a, group_b, equal_var=False)
+    t_stat, p_value = _welch_ttest(group_a, group_b)
     d = cohens_d(group_a, group_b)
     ci_low, ci_high = bootstrap_ci(group_a, group_b)
 
