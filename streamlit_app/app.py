@@ -824,20 +824,20 @@ with tab7:
 
                 with col_v1:
                     st.markdown('<div class="section-header">Distribution Comparison</div>', unsafe_allow_html=True)
-                    import plotly.figure_factory as ff
-                    fig = ff.create_distplot(
-                        [group_a.tolist(), group_b.tolist()],
-                        group_labels=[str(val_a), str(val_b)],
-                        colors=["#60a5fa", "#f472b6"],
-                        show_hist=False, show_rug=False
-                    )
-                    fig.add_vline(x=result["mean_a"], line_dash="dash",
-                                  line_color="#60a5fa",
+                    # KDE using histogram with density normalization (works on all plotly versions)
+                    fig = go.Figure()
+                    for grp, color, label in [(group_a, "#60a5fa", str(val_a)), (group_b, "#f472b6", str(val_b))]:
+                        fig.add_trace(go.Histogram(
+                            x=grp, name=label, opacity=0.6,
+                            marker_color=color, histnorm="probability density",
+                            nbinsx=20
+                        ))
+                    fig.add_vline(x=result["mean_a"], line_dash="dash", line_color="#60a5fa",
                                   annotation_text=f"μ={result['mean_a']:.1f}")
-                    fig.add_vline(x=result["mean_b"], line_dash="dash",
-                                  line_color="#f472b6",
+                    fig.add_vline(x=result["mean_b"], line_dash="dash", line_color="#f472b6",
                                   annotation_text=f"μ={result['mean_b']:.1f}")
                     fig.update_layout(
+                        barmode="overlay",
                         plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
                         font_color="#cbd5e1", height=340,
                         margin=dict(l=0,r=0,t=10,b=0),
