@@ -1,489 +1,631 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Customer Shopping Behavior Analysis — Documentation</title>
+<title>Customer Shopping Behavior — Full Documentation</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f1117;color:#e2e8f0;line-height:1.7}
+a{color:#60a5fa;text-decoration:none}a:hover{text-decoration:underline}
+code{background:#1e2535;padding:2px 6px;border-radius:4px;font-size:0.85em;color:#86efac}
+pre{background:#0d1117;border:1px solid #2d3748;border-radius:10px;padding:20px;font-size:0.84rem;overflow-x:auto;color:#86efac;line-height:1.7;margin:12px 0}
 
-  body {
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    background: #0f1117;
-    color: #e2e8f0;
-    line-height: 1.7;
-  }
+/* Hero */
+.hero{background:linear-gradient(135deg,#1a1f2e,#0d1117 60%,#1a1a2e);border-bottom:1px solid #2d3748;padding:60px 40px 48px;text-align:center}
+.hero h1{font-size:2.4rem;font-weight:700;color:#fff;margin-bottom:8px}
+.hero h1 span{color:#60a5fa}
+.hero p{color:#94a3b8;font-size:1rem;margin-bottom:22px}
+.badges{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:18px}
+.badge{padding:5px 14px;border-radius:20px;font-size:0.76rem;font-weight:600;letter-spacing:.4px}
+.b-blue{background:#1d4ed8;color:#bfdbfe}.b-orange{background:#92400e;color:#fde68a}
+.b-green{background:#065f46;color:#6ee7b7}.b-yellow{background:#78350f;color:#fde68a}
+.b-purple{background:#4c1d95;color:#ddd6fe}.b-red{background:#7f1d1d;color:#fca5a5}
+.author{color:#64748b;font-size:.88rem}
 
-  /* ── Hero ── */
-  .hero {
-    background: linear-gradient(135deg, #1a1f2e 0%, #0d1117 60%, #1a1a2e 100%);
-    border-bottom: 1px solid #2d3748;
-    padding: 60px 40px 50px;
-    text-align: center;
-  }
-  .hero h1 { font-size: 2.4rem; font-weight: 700; color: #fff; margin-bottom: 10px; }
-  .hero h1 span { color: #60a5fa; }
-  .hero p { color: #94a3b8; font-size: 1.05rem; margin-bottom: 24px; }
-  .badges { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 20px; }
-  .badge {
-    padding: 5px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 600;
-    letter-spacing: 0.5px;
-  }
-  .badge-blue   { background: #1d4ed8; color: #bfdbfe; }
-  .badge-orange { background: #92400e; color: #fde68a; }
-  .badge-green  { background: #065f46; color: #6ee7b7; }
-  .badge-yellow { background: #78350f; color: #fde68a; }
-  .badge-purple { background: #4c1d95; color: #ddd6fe; }
-  .author-line { color: #64748b; font-size: 0.9rem; }
-  .author-line a { color: #60a5fa; text-decoration: none; }
-  .author-line a:hover { text-decoration: underline; }
+/* Layout */
+.container{max-width:1100px;margin:0 auto;padding:0 24px 80px}
 
-  /* ── Layout ── */
-  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px 80px; }
+/* Nav */
+.toc{background:#161b27;border:1px solid #2d3748;border-radius:12px;padding:24px 28px;margin:40px 0 20px}
+.toc h3{color:#60a5fa;font-size:1rem;margin-bottom:12px}
+.toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:6px 20px}
+.toc a{color:#94a3b8;font-size:.85rem;display:block;padding:3px 0}
+.toc a:hover{color:#f1f5f9}
 
-  /* ── Section ── */
-  .section { margin-top: 60px; }
-  .section-title {
-    font-size: 1.5rem; font-weight: 700; color: #f1f5f9;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #2d3748;
-    margin-bottom: 24px;
-    display: flex; align-items: center; gap: 10px;
-  }
+/* Section */
+.section{margin-top:56px}
+.section-title{font-size:1.4rem;font-weight:700;color:#f1f5f9;padding-bottom:10px;border-bottom:2px solid #2d3748;margin-bottom:22px;display:flex;align-items:center;gap:10px}
 
-  /* ── Cards ── */
-  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
-  .card {
-    background: #1e2535; border: 1px solid #2d3748; border-radius: 10px;
-    padding: 20px; transition: border-color 0.2s;
-  }
-  .card:hover { border-color: #60a5fa; }
-  .card-icon { font-size: 1.8rem; margin-bottom: 10px; }
-  .card-title { font-weight: 700; color: #f1f5f9; margin-bottom: 6px; font-size: 0.95rem; }
-  .card-desc { color: #94a3b8; font-size: 0.85rem; }
+/* Cards */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.card{background:#1e2535;border:1px solid #2d3748;border-radius:10px;padding:18px 20px;transition:border-color .2s}
+.card:hover{border-color:#60a5fa}
+.card-icon{font-size:1.6rem;margin-bottom:8px}
+.card-title{font-weight:700;color:#f1f5f9;margin-bottom:5px;font-size:.92rem}
+.card-desc{color:#94a3b8;font-size:.82rem}
 
-  /* ── Tables ── */
-  .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid #2d3748; }
-  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-  thead { background: #1e2535; }
-  th { padding: 12px 16px; text-align: left; color: #60a5fa; font-weight: 600; white-space: nowrap; }
-  td { padding: 11px 16px; border-top: 1px solid #1e2535; color: #cbd5e1; }
-  tr:hover td { background: #1e2535; }
-  tr:nth-child(even) td { background: #161b27; }
-  tr:nth-child(even):hover td { background: #1e2535; }
+/* Table */
+.table-wrap{overflow-x:auto;border-radius:10px;border:1px solid #2d3748}
+table{width:100%;border-collapse:collapse;font-size:.87rem}
+thead{background:#1e2535}
+th{padding:11px 15px;text-align:left;color:#60a5fa;font-weight:600;white-space:nowrap}
+td{padding:10px 15px;border-top:1px solid #1e2535;color:#cbd5e1}
+tr:hover td{background:#1e2535}
+tr:nth-child(even) td{background:#161b27}
 
-  /* ── Diff blocks ── */
-  .diff-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  @media(max-width:640px){ .diff-grid { grid-template-columns: 1fr; } }
-  .diff-box { border-radius: 10px; padding: 20px; }
-  .diff-old { background: #2d1515; border: 1px solid #7f1d1d; }
-  .diff-new { background: #0d2d1a; border: 1px solid #14532d; }
-  .diff-box h4 { font-size: 0.85rem; font-weight: 700; margin-bottom: 12px; }
-  .diff-old h4 { color: #fca5a5; }
-  .diff-new h4 { color: #86efac; }
-  .diff-box ul { list-style: none; }
-  .diff-box li { font-size: 0.84rem; padding: 4px 0; color: #cbd5e1; }
-  .diff-old li::before { content: "✗  "; color: #f87171; }
-  .diff-new li::before { content: "✓  "; color: #4ade80; }
+/* Diff */
+.diff-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:600px){.diff-grid{grid-template-columns:1fr}}
+.diff-box{border-radius:10px;padding:18px 20px}
+.diff-old{background:#2d1515;border:1px solid #7f1d1d}
+.diff-new{background:#0d2d1a;border:1px solid #14532d}
+.diff-box h4{font-size:.84rem;font-weight:700;margin-bottom:10px}
+.diff-old h4{color:#fca5a5}.diff-new h4{color:#86efac}
+.diff-box ul{list-style:none}
+.diff-box li{font-size:.83rem;padding:3px 0;color:#cbd5e1}
+.diff-old li::before{content:"✗  ";color:#f87171}
+.diff-new li::before{content:"✓  ";color:#4ade80}
 
-  /* ── Chips ── */
-  .chip-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-  .chip {
-    background: #1e2535; border: 1px solid #2d3748;
-    border-radius: 20px; padding: 4px 12px;
-    font-size: 0.8rem; color: #94a3b8;
-  }
+/* Chips */
+.chip-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{background:#1e2535;border:1px solid #2d3748;border-radius:20px;padding:4px 12px;font-size:.78rem;color:#94a3b8}
 
-  /* ── Insight cards ── */
-  .insight-list { display: flex; flex-direction: column; gap: 12px; }
-  .insight {
-    display: flex; gap: 14px; align-items: flex-start;
-    background: #1e2535; border: 1px solid #2d3748;
-    border-radius: 10px; padding: 16px 20px;
-  }
-  .insight-num {
-    min-width: 32px; height: 32px; border-radius: 50%;
-    background: #1d4ed8; color: #bfdbfe;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
-  }
-  .insight-text { color: #cbd5e1; font-size: 0.92rem; }
-  .insight-text strong { color: #f1f5f9; }
+/* Segments */
+.seg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.seg-card{border-radius:10px;padding:15px;text-align:center}
+.seg-name{font-weight:700;font-size:.92rem;margin-bottom:3px}
+.seg-score{font-size:.76rem;opacity:.8}
+.seg-1{background:#052e16;border:1px solid #16a34a;color:#4ade80}
+.seg-2{background:#0d2d1a;border:1px solid #22c55e;color:#86efac}
+.seg-3{background:#2d1f00;border:1px solid #d97706;color:#fbbf24}
+.seg-4{background:#2d1500;border:1px solid #ea580c;color:#fb923c}
+.seg-5{background:#2d0f0f;border:1px solid #dc2626;color:#f87171}
 
-  /* ── Code block ── */
-  pre {
-    background: #0d1117; border: 1px solid #2d3748; border-radius: 10px;
-    padding: 20px; font-size: 0.84rem; overflow-x: auto;
-    color: #86efac; line-height: 1.6; margin-top: 12px;
-  }
+/* Insight */
+.insight-list{display:flex;flex-direction:column;gap:10px}
+.insight{display:flex;gap:14px;align-items:flex-start;background:#1e2535;border:1px solid #2d3748;border-radius:10px;padding:15px 18px}
+.insight-num{min-width:30px;height:30px;border-radius:50%;background:#1d4ed8;color:#bfdbfe;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;flex-shrink:0}
+.insight-text{color:#cbd5e1;font-size:.9rem}
+.insight-text strong{color:#f1f5f9}
 
-  /* ── Segment pills ── */
-  .seg-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 12px; }
-  .seg-card { border-radius: 10px; padding: 16px; text-align: center; }
-  .seg-card .seg-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
-  .seg-card .seg-score { font-size: 0.78rem; opacity: 0.8; }
-  .seg-champions    { background: #052e16; border: 1px solid #16a34a; color: #4ade80; }
-  .seg-loyal        { background: #0d2d1a; border: 1px solid #22c55e; color: #86efac; }
-  .seg-potential    { background: #2d1f00; border: 1px solid #d97706; color: #fbbf24; }
-  .seg-atrisk       { background: #2d1500; border: 1px solid #ea580c; color: #fb923c; }
-  .seg-lost         { background: #2d0f0f; border: 1px solid #dc2626; color: #f87171; }
+/* File tree */
+.filetree{background:#0d1117;border:1px solid #2d3748;border-radius:10px;padding:20px;font-family:monospace;font-size:.83rem;color:#94a3b8;line-height:2}
+.filetree .new{color:#4ade80}.filetree .mod{color:#fbbf24}.filetree .orig{color:#64748b}.filetree .dir{color:#60a5fa}
 
-  /* ── Plot grid ── */
-  .plot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
-  .plot-card {
-    background: #1e2535; border: 1px solid #2d3748; border-radius: 10px;
-    padding: 16px; display: flex; gap: 14px; align-items: center;
-  }
-  .plot-num {
-    min-width: 36px; height: 36px; background: #1d4ed8; border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 700; color: #bfdbfe; font-size: 0.85rem; flex-shrink: 0;
-  }
-  .plot-info .plot-title { font-weight: 600; color: #f1f5f9; font-size: 0.88rem; }
-  .plot-info .plot-desc  { color: #64748b; font-size: 0.78rem; margin-top: 2px; }
+/* Tab list */
+.tab-list{display:flex;flex-direction:column;gap:10px}
+.tab-item{display:flex;gap:16px;background:#1e2535;border:1px solid #2d3748;border-radius:10px;padding:14px 18px;align-items:flex-start}
+.tab-icon{font-size:1.4rem;min-width:28px;text-align:center}
+.tab-title{font-weight:700;color:#f1f5f9;font-size:.92rem;margin-bottom:3px}
+.tab-desc{color:#94a3b8;font-size:.82rem}
 
-  /* ── File tree ── */
-  .filetree {
-    background: #0d1117; border: 1px solid #2d3748; border-radius: 10px;
-    padding: 20px; font-family: monospace; font-size: 0.84rem; color: #94a3b8;
-    line-height: 1.9;
-  }
-  .filetree .new  { color: #4ade80; }
-  .filetree .mod  { color: #fbbf24; }
-  .filetree .orig { color: #64748b; }
-  .filetree .dir  { color: #60a5fa; }
+/* Workflow */
+.workflow-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.workflow-card{background:#1e2535;border:1px solid #2d3748;border-radius:10px;padding:18px}
+.workflow-title{font-weight:700;color:#f1f5f9;font-size:.95rem;margin-bottom:6px}
+.workflow-trigger{background:#0d1117;border-radius:6px;padding:3px 10px;font-size:.75rem;color:#fbbf24;display:inline-block;margin-bottom:10px}
+.workflow-steps{list-style:none}
+.workflow-steps li{font-size:.82rem;color:#94a3b8;padding:2px 0}
+.workflow-steps li::before{content:"→ ";color:#60a5fa}
 
-  /* ── Commit log ── */
-  .commit-list { display: flex; flex-direction: column; gap: 10px; }
-  .commit {
-    display: flex; gap: 14px; align-items: flex-start;
-    background: #1e2535; border: 1px solid #2d3748;
-    border-radius: 8px; padding: 12px 16px;
-  }
-  .commit-hash { font-family: monospace; font-size: 0.8rem; color: #60a5fa; min-width: 70px; }
-  .commit-msg  { font-size: 0.88rem; color: #cbd5e1; }
+/* Commit */
+.commit-list{display:flex;flex-direction:column;gap:8px}
+.commit{display:flex;gap:14px;background:#1e2535;border:1px solid #2d3748;border-radius:8px;padding:11px 16px;align-items:center}
+.commit-hash{font-family:monospace;font-size:.78rem;color:#60a5fa;min-width:68px}
+.commit-msg{font-size:.86rem;color:#cbd5e1}
 
-  /* ── Footer ── */
-  footer {
-    text-align: center; padding: 30px;
-    border-top: 1px solid #2d3748; color: #475569; font-size: 0.85rem;
-    margin-top: 40px;
-  }
-  footer a { color: #60a5fa; text-decoration: none; }
+/* KPI row */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:24px}
+.kpi{background:#1e2535;border:1px solid #2d3748;border-radius:10px;padding:16px;text-align:center}
+.kpi-val{font-size:1.8rem;font-weight:700;color:#60a5fa}
+.kpi-label{font-size:.78rem;color:#94a3b8;margin-top:4px}
+
+footer{text-align:center;padding:28px;border-top:1px solid #2d3748;color:#475569;font-size:.84rem;margin-top:40px}
 </style>
 </head>
 <body>
 
+<!-- HERO -->
 <div class="hero">
   <h1>🛍️ Customer Shopping <span>Behavior Analysis</span></h1>
-  <p>End-to-end Data Analytics Portfolio Project · Python · SQL · Power BI</p>
+  <p>End-to-end Data Analytics + Data Science Portfolio Project</p>
   <div class="badges">
-    <span class="badge badge-blue">Python 3.13</span>
-    <span class="badge badge-orange">Jupyter Notebook</span>
-    <span class="badge badge-blue">PostgreSQL · MySQL · MSSQL</span>
-    <span class="badge badge-yellow">Power BI</span>
-    <span class="badge badge-purple">scikit-learn</span>
-    <span class="badge badge-green">MIT License</span>
+    <span class="badge b-blue">Python 3.13</span>
+    <span class="badge b-orange">Jupyter Notebook</span>
+    <span class="badge b-blue">PostgreSQL · MySQL · MSSQL</span>
+    <span class="badge b-yellow">Power BI</span>
+    <span class="badge b-red">Streamlit</span>
+    <span class="badge b-purple">scikit-learn</span>
+    <span class="badge b-green">GitHub Actions CI</span>
+    <span class="badge b-green">MIT License</span>
   </div>
-  <div class="author-line">
-    Built by <strong>Ankit Kumar</strong> &nbsp;|&nbsp;
-    <a href="https://github.com/hrts51" target="_blank">github.com/hrts51</a> &nbsp;|&nbsp;
-    <a href="https://github.com/hrts51/customer-trends-data-analysis-SQL-Python-PowerBI" target="_blank">View Repository →</a>
+  <div class="author">
+    <strong>Ankit Kumar</strong> &nbsp;·&nbsp;
+    <a href="https://github.com/hrts51">github.com/hrts51</a> &nbsp;·&nbsp;
+    <a href="https://github.com/hrts51/customer-trends-data-analysis-SQL-Python-PowerBI">View Repository →</a>
   </div>
 </div>
 
 <div class="container">
 
-  <div class="section">
-    <div class="section-title">📌 Project Overview</div>
-    <div class="card-grid">
-      <div class="card"><div class="card-icon">🧹</div><div class="card-title">Data Cleaning & EDA</div><div class="card-desc">pandas · seaborn · matplotlib<br/>Cleaned dataset + 9 charts</div></div>
-      <div class="card"><div class="card-icon">⚙️</div><div class="card-title">Feature Engineering</div><div class="card-desc">Age group · Spend tier · Loyalty tier · Frequency days</div></div>
-      <div class="card"><div class="card-icon">🎯</div><div class="card-title">RFM Segmentation</div><div class="card-desc">scikit-learn<br/>5 customer segments scored 1–15</div></div>
-      <div class="card"><div class="card-icon">🤖</div><div class="card-title">Churn Prediction</div><div class="card-desc">Random Forest Classifier<br/>Per-customer churn probability</div></div>
-      <div class="card"><div class="card-icon">🗄️</div><div class="card-title">SQL Analytics</div><div class="card-desc">PostgreSQL / MySQL / MSSQL<br/>15 business queries · 4 sections</div></div>
-      <div class="card"><div class="card-icon">📊</div><div class="card-title">Power BI Dashboard</div><div class="card-desc">Interactive .pbix dashboard<br/>Connect via SQL or CSV</div></div>
-    </div>
+<!-- TOC -->
+<div class="toc">
+  <h3>📑 Table of Contents</h3>
+  <div class="toc-grid">
+    <a href="#overview">1. Project Overview</a>
+    <a href="#dataset">2. Dataset</a>
+    <a href="#original">3. Original Project</a>
+    <a href="#improvements">4. Improvements Made</a>
+    <a href="#features">5. Feature Engineering</a>
+    <a href="#eda">6. EDA Visualizations (15 charts)</a>
+    <a href="#rfm">7. RFM Segmentation</a>
+    <a href="#churn">8. Churn Prediction</a>
+    <a href="#clv">9. CLV Prediction</a>
+    <a href="#ab">10. A/B Testing</a>
+    <a href="#sql">11. SQL Queries</a>
+    <a href="#streamlit">12. Streamlit Dashboard</a>
+    <a href="#ci">13. GitHub Actions CI/CD</a>
+    <a href="#files">14. File Inventory</a>
+    <a href="#run">15. How to Run</a>
+    <a href="#insights">16. Business Insights</a>
+    <a href="#commits">17. Git History</a>
   </div>
+</div>
 
-  <div class="section">
-    <div class="section-title">📋 Dataset Overview</div>
-    <div class="card-grid" style="grid-template-columns: repeat(4,1fr); margin-bottom: 20px;">
-      <div class="card" style="text-align:center;"><div style="font-size:2rem;font-weight:700;color:#60a5fa;">3,900</div><div class="card-desc">Customer Transactions</div></div>
-      <div class="card" style="text-align:center;"><div style="font-size:2rem;font-weight:700;color:#4ade80;">18</div><div class="card-desc">Original Columns</div></div>
-      <div class="card" style="text-align:center;"><div style="font-size:2rem;font-weight:700;color:#fbbf24;">24</div><div class="card-desc">Final Columns</div></div>
-      <div class="card" style="text-align:center;"><div style="font-size:2rem;font-weight:700;color:#f87171;">37</div><div class="card-desc">Missing Values Fixed</div></div>
-    </div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Column</th><th>Type</th><th>Description</th></tr></thead>
-        <tbody>
-          <tr><td>Customer ID</td><td>int</td><td>Unique customer identifier (1–3900)</td></tr>
-          <tr><td>Age</td><td>int</td><td>Customer age (18–70)</td></tr>
-          <tr><td>Gender</td><td>string</td><td>Male / Female</td></tr>
-          <tr><td>Item Purchased</td><td>string</td><td>25 unique product names</td></tr>
-          <tr><td>Category</td><td>string</td><td>Clothing · Footwear · Outerwear · Accessories</td></tr>
-          <tr><td>Purchase Amount (USD)</td><td>int</td><td>Transaction value ($20–$100)</td></tr>
-          <tr><td>Location</td><td>string</td><td>50 US states</td></tr>
-          <tr><td>Size</td><td>string</td><td>S / M / L / XL</td></tr>
-          <tr><td>Color</td><td>string</td><td>25 color options</td></tr>
-          <tr><td>Season</td><td>string</td><td>Spring / Summer / Fall / Winter</td></tr>
-          <tr><td>Review Rating</td><td>float</td><td>2.5–5.0 · had 37 missing values (now fixed)</td></tr>
-          <tr><td>Subscription Status</td><td>string</td><td>Yes / No</td></tr>
-          <tr><td>Shipping Type</td><td>string</td><td>6 types (Free, Express, Standard, etc.)</td></tr>
-          <tr><td>Discount Applied</td><td>string</td><td>Yes / No</td></tr>
-          <tr><td>Promo Code Used</td><td>string</td><td>Identical to Discount Applied — dropped</td></tr>
-          <tr><td>Previous Purchases</td><td>int</td><td>Count of past purchases (1–50)</td></tr>
-          <tr><td>Payment Method</td><td>string</td><td>6 methods (PayPal, Credit Card, Venmo, etc.)</td></tr>
-          <tr><td>Frequency of Purchases</td><td>string</td><td>Weekly / Monthly / Annually / etc.</td></tr>
-        </tbody>
-      </table>
-    </div>
+<!-- KPI Row -->
+<div class="kpi-row" style="margin-top:32px">
+  <div class="kpi"><div class="kpi-val">3,900</div><div class="kpi-label">Customer Transactions</div></div>
+  <div class="kpi"><div class="kpi-val">25+</div><div class="kpi-label">Engineered Features</div></div>
+  <div class="kpi"><div class="kpi-val">15</div><div class="kpi-label">EDA Charts</div></div>
+  <div class="kpi"><div class="kpi-val">3</div><div class="kpi-label">ML Models</div></div>
+  <div class="kpi"><div class="kpi-val">15</div><div class="kpi-label">SQL Queries</div></div>
+  <div class="kpi"><div class="kpi-val">8</div><div class="kpi-label">Streamlit Tabs</div></div>
+  <div class="kpi"><div class="kpi-val">3</div><div class="kpi-label">CI Workflows</div></div>
+</div>
+
+<!-- SECTION 1 -->
+<div class="section" id="overview">
+  <div class="section-title">📌 1. Project Overview</div>
+  <div class="card-grid">
+    <div class="card"><div class="card-icon">🧹</div><div class="card-title">Data Cleaning & EDA</div><div class="card-desc">pandas · seaborn · matplotlib<br/>15 charts across 6 categories</div></div>
+    <div class="card"><div class="card-icon">⚙️</div><div class="card-title">Feature Engineering</div><div class="card-desc">15 new features including RFM scores, CLV, churn label</div></div>
+    <div class="card"><div class="card-icon">🎯</div><div class="card-title">RFM Segmentation</div><div class="card-desc">5 customer segments scored 1–15</div></div>
+    <div class="card"><div class="card-icon">🤖</div><div class="card-title">Churn Prediction</div><div class="card-desc">Random Forest · per-customer probability</div></div>
+    <div class="card"><div class="card-icon">💰</div><div class="card-title">CLV Prediction</div><div class="card-desc">Gradient Boosting · R²=0.9999 · MAE=$9.50</div></div>
+    <div class="card"><div class="card-icon">🧪</div><div class="card-title">A/B Testing</div><div class="card-desc">Welch t-test · Cohen's d · Bootstrap CI</div></div>
+    <div class="card"><div class="card-icon">🗄️</div><div class="card-title">SQL Analytics</div><div class="card-desc">15 queries · 4 sections · Window functions · CTEs</div></div>
+    <div class="card"><div class="card-icon">🌐</div><div class="card-title">Streamlit Web App</div><div class="card-desc">8 tabs · sidebar filters · live charts</div></div>
+    <div class="card"><div class="card-icon">⚡</div><div class="card-title">GitHub Actions CI</div><div class="card-desc">3 workflows · notebook exec · lint · app test</div></div>
   </div>
+</div>
 
-  <div class="section">
-    <div class="section-title">🗂️ What Was Already Done (Original)</div>
-    <div class="diff-grid">
-      <div>
-        <h4 style="color:#f1f5f9; margin-bottom:14px; font-size:1rem;">📓 Python Notebook</h4>
-        <div class="chip-list">
-          <span class="chip">Load CSV with pandas</span>
-          <span class="chip">df.info() & df.describe()</span>
-          <span class="chip">Null check</span>
-          <span class="chip">Impute Review Rating (category median)</span>
-          <span class="chip">Rename columns to snake_case</span>
-          <span class="chip">Drop promo_code_used</span>
-          <span class="chip">Create age_group (pd.qcut)</span>
-          <span class="chip">Create purchase_frequency_days</span>
-          <span class="chip">Load to PostgreSQL via sqlalchemy</span>
-          <span class="chip">MySQL & MSSQL commented code</span>
-        </div>
-      </div>
-      <div>
-        <h4 style="color:#f1f5f9; margin-bottom:14px; font-size:1rem;">🗄️ SQL Queries (10 total)</h4>
-        <div class="chip-list">
-          <span class="chip">Q1 Revenue by gender</span>
-          <span class="chip">Q2 Discount buyers above avg</span>
-          <span class="chip">Q3 Top 5 products by rating</span>
-          <span class="chip">Q4 Standard vs Express shipping</span>
-          <span class="chip">Q5 Subscribed vs not spend</span>
-          <span class="chip">Q6 Top 5 discount rate products</span>
-          <span class="chip">Q7 New/Returning/Loyal segments</span>
-          <span class="chip">Q8 Top 3 per category (ROW_NUMBER)</span>
-          <span class="chip">Q9 Repeat buyers vs subscription</span>
-          <span class="chip">Q10 Revenue by age group</span>
-        </div>
-      </div>
-    </div>
-    <div style="margin-top:16px;" class="diff-grid">
-      <div>
-        <h4 style="color:#f1f5f9; margin-bottom:14px; font-size:1rem;">📁 Other Files</h4>
-        <div class="chip-list">
-          <span class="chip">customer_behavior_dashboard.pbix</span>
-          <span class="chip">Business Problem Document.pdf</span>
-          <span class="chip">Customer Shopping Behavior Analysis.pdf</span>
-          <span class="chip">Customer-Shopping-Behavior-Analysis.pptx</span>
-          <span class="chip">LICENSE</span>
-        </div>
-      </div>
-      <div>
-        <h4 style="color:#f1f5f9; margin-bottom:14px; font-size:1rem;">❌ What Was Missing</h4>
-        <div class="chip-list">
-          <span class="chip" style="border-color:#7f1d1d;color:#fca5a5;">No requirements.txt</span>
-          <span class="chip" style="border-color:#7f1d1d;color:#fca5a5;">No .gitignore</span>
-          <span class="chip" style="border-color:#7f1d1d;color:#fca5a5;">No EDA visualizations</span>
-          <span class="chip" style="border-color:#7f1d1d;color:#fca5a5;">No RFM segmentation</span>
-          <span class="chip" style="border-color:#7f1d1d;color:#fca5a5;">No churn model</span>
-          <span class="chip" style="border-color:#7f1d1d;color:#fca5a5;">No cleaned CSV export</span>
-          <span class="chip" style="border-color:#7f1d1d;color:#fca5a5;">No setup instructions</span>
-        </div>
-      </div>
-    </div>
+<!-- SECTION 2 -->
+<div class="section" id="dataset">
+  <div class="section-title">📋 2. Dataset Overview</div>
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-val">3,900</div><div class="kpi-label">Rows</div></div>
+    <div class="kpi"><div class="kpi-val">18</div><div class="kpi-label">Original Columns</div></div>
+    <div class="kpi"><div class="kpi-val">25+</div><div class="kpi-label">Final Columns</div></div>
+    <div class="kpi"><div class="kpi-val">37</div><div class="kpi-label">Missing Values Fixed</div></div>
   </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Column</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Customer ID</td><td>int</td><td>Unique identifier (1–3900)</td></tr>
+        <tr><td>Age</td><td>int</td><td>18–70</td></tr>
+        <tr><td>Gender</td><td>string</td><td>Male / Female</td></tr>
+        <tr><td>Item Purchased</td><td>string</td><td>25 unique products</td></tr>
+        <tr><td>Category</td><td>string</td><td>Clothing · Footwear · Outerwear · Accessories</td></tr>
+        <tr><td>Purchase Amount (USD)</td><td>int</td><td>$20–$100</td></tr>
+        <tr><td>Location</td><td>string</td><td>50 US states</td></tr>
+        <tr><td>Size</td><td>string</td><td>S / M / L / XL</td></tr>
+        <tr><td>Color</td><td>string</td><td>25 options</td></tr>
+        <tr><td>Season</td><td>string</td><td>Spring / Summer / Fall / Winter</td></tr>
+        <tr><td>Review Rating</td><td>float</td><td>2.5–5.0 · 37 nulls → imputed</td></tr>
+        <tr><td>Subscription Status</td><td>string</td><td>Yes / No</td></tr>
+        <tr><td>Shipping Type</td><td>string</td><td>6 types</td></tr>
+        <tr><td>Discount Applied</td><td>string</td><td>Yes / No</td></tr>
+        <tr><td>Promo Code Used</td><td>string</td><td>Identical to Discount — dropped</td></tr>
+        <tr><td>Previous Purchases</td><td>int</td><td>1–50</td></tr>
+        <tr><td>Payment Method</td><td>string</td><td>6 methods</td></tr>
+        <tr><td>Frequency of Purchases</td><td>string</td><td>Weekly → Annually</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
-  <div class="section">
-    <div class="section-title">✨ What Was Improved</div>
-
-    <h3 style="color:#f1f5f9; margin-bottom:14px; font-size:1rem;">New Files Added</h3>
-    <div class="table-wrap" style="margin-bottom:30px;">
-      <table>
-        <thead><tr><th>File</th><th>Purpose</th><th>Status</th></tr></thead>
-        <tbody>
-          <tr><td><code>requirements.txt</code></td><td>Pinned Python dependencies for reproducible setup</td><td style="color:#4ade80;">✅ New</td></tr>
-          <tr><td><code>.gitignore</code></td><td>Excludes venv, secrets, OS files, Jupyter checkpoints</td><td style="color:#4ade80;">✅ New</td></tr>
-          <tr><td><code>customer_shopping_behavior_cleaned.csv</code></td><td>Cleaned + enriched dataset (24 cols) for Power BI</td><td style="color:#4ade80;">✅ New</td></tr>
-          <tr><td><code>plots/</code> (9 PNG files)</td><td>All EDA and model charts saved as images</td><td style="color:#4ade80;">✅ New</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <h3 style="color:#f1f5f9; margin-bottom:14px; font-size:1rem;">New Engineered Features</h3>
-    <div class="table-wrap" style="margin-bottom:30px;">
-      <table>
-        <thead><tr><th>Feature</th><th>Logic</th></tr></thead>
-        <tbody>
-          <tr><td><code>spend_tier</code></td><td>Low (&lt;$40) / Medium ($40–$70) / High (&gt;$70)</td></tr>
-          <tr><td><code>loyalty_tier</code></td><td>New (1 purchase) / Returning (2–10) / Loyal (11+)</td></tr>
-          <tr><td><code>rfm_r, rfm_f, rfm_m</code></td><td>RFM individual scores (1–5 each)</td></tr>
-          <tr><td><code>rfm_score</code></td><td>Combined RFM total score (3–15)</td></tr>
-          <tr><td><code>rfm_segment</code></td><td>Champions / Loyal / Potential / At Risk / Lost</td></tr>
-          <tr><td><code>churn_probability</code></td><td>Random Forest predicted churn probability (0.0–1.0)</td></tr>
-          <tr><td><code>is_churn</code></td><td>Rule-based label: infrequent + low rating + not subscribed</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <h3 style="color:#f1f5f9; margin-bottom:14px; font-size:1rem;">EDA Visualizations (9 charts)</h3>
-    <div class="plot-grid" style="margin-bottom:30px;">
-      <div class="plot-card"><div class="plot-num">01</div><div class="plot-info"><div class="plot-title">Purchase Distribution & Gender Revenue</div><div class="plot-desc">Histogram with mean/median + bar chart</div></div></div>
-      <div class="plot-card"><div class="plot-num">02</div><div class="plot-info"><div class="plot-title">Revenue by Category & Season</div><div class="plot-desc">Bar charts for category and seasonal trends</div></div></div>
-      <div class="plot-card"><div class="plot-num">03</div><div class="plot-info"><div class="plot-title">Age Group & Subscription</div><div class="plot-desc">Revenue by age + subscription pie chart</div></div></div>
-      <div class="plot-card"><div class="plot-num">04</div><div class="plot-info"><div class="plot-title">Shipping, Payment & Discount</div><div class="plot-desc">3-panel: shipping avg, payment usage, discount impact</div></div></div>
-      <div class="plot-card"><div class="plot-num">05</div><div class="plot-info"><div class="plot-title">Top Products & Ratings</div><div class="plot-desc">Top 10 by revenue + avg rating by category</div></div></div>
-      <div class="plot-card"><div class="plot-num">06</div><div class="plot-info"><div class="plot-title">Correlation Heatmap</div><div class="plot-desc">Lower-triangle matrix for all numeric features</div></div></div>
-      <div class="plot-card"><div class="plot-num">07</div><div class="plot-info"><div class="plot-title">Loyalty × Subscription Heatmap</div><div class="plot-desc">Avg spend across loyalty + subscription combos</div></div></div>
-      <div class="plot-card"><div class="plot-num">08</div><div class="plot-info"><div class="plot-title">RFM Segments</div><div class="plot-desc">Segment counts + avg monetary per segment</div></div></div>
-      <div class="plot-card"><div class="plot-num">09</div><div class="plot-info"><div class="plot-title">Churn Model</div><div class="plot-desc">Confusion matrix + feature importance</div></div></div>
-    </div>
-
-    <h3 style="color:#f1f5f9; margin-bottom:14px; font-size:1rem;">RFM Customer Segments</h3>
-    <div class="seg-grid" style="margin-bottom:30px;">
-      <div class="seg-card seg-champions"><div class="seg-name">🏆 Champions</div><div class="seg-score">Score 13–15 · Best customers</div></div>
-      <div class="seg-card seg-loyal"><div class="seg-name">💚 Loyal Customers</div><div class="seg-score">Score 10–12 · Regular buyers</div></div>
-      <div class="seg-card seg-potential"><div class="seg-name">⭐ Potential Loyalists</div><div class="seg-score">Score 7–9 · Need nurturing</div></div>
-      <div class="seg-card seg-atrisk"><div class="seg-name">⚠️ At Risk</div><div class="seg-score">Score 5–6 · Declining activity</div></div>
-      <div class="seg-card seg-lost"><div class="seg-name">❌ Lost</div><div class="seg-score">Score &lt;5 · Inactive</div></div>
-    </div>
-
-    <h3 style="color:#f1f5f9; margin-bottom:14px; font-size:1rem;">SQL — 5 New Queries Added</h3>
-    <div class="table-wrap" style="margin-bottom:30px;">
-      <table>
-        <thead><tr><th>#</th><th>Query</th><th>Technique</th></tr></thead>
-        <tbody>
-          <tr><td>Q11</td><td>Running total of revenue + percentile rank per customer</td><td>SUM() OVER · RANK() OVER</td></tr>
-          <tr><td>Q12</td><td>Top 5 US states by total revenue</td><td>GROUP BY · ORDER BY</td></tr>
-          <tr><td>Q13</td><td>Payment method by avg spend and total revenue</td><td>Aggregation</td></tr>
-          <tr><td>Q14</td><td>Season × Category revenue cross-tab (pivot)</td><td>CASE WHEN conditional aggregation</td></tr>
-          <tr><td>Q15</td><td>Full RFM customer scoring in SQL</td><td>NTILE · CASE WHEN · CTEs</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <h3 style="color:#f1f5f9; margin-bottom:14px; font-size:1rem;">README — Before vs After</h3>
-    <div class="diff-grid">
-      <div class="diff-box diff-old">
-        <h4>Before</h4>
-        <ul>
-          <li>Original author credits throughout</li>
-          <li>No setup/install instructions</li>
-          <li>No project structure tree</li>
-          <li>No dataset column summary</li>
-          <li>No key insights section</li>
-          <li>No tech stack section</li>
-          <li>No badges</li>
-        </ul>
+<!-- SECTION 3 -->
+<div class="section" id="original">
+  <div class="section-title">🗂️ 3. What Was in the Original Project</div>
+  <div class="diff-grid">
+    <div>
+      <h4 style="color:#f1f5f9;margin-bottom:12px">📓 Python Notebook</h4>
+      <div class="chip-list">
+        <span class="chip">Load CSV</span><span class="chip">df.info() & describe()</span>
+        <span class="chip">Null imputation</span><span class="chip">Rename to snake_case</span>
+        <span class="chip">Drop promo_code_used</span><span class="chip">age_group</span>
+        <span class="chip">purchase_frequency_days</span><span class="chip">PostgreSQL load</span>
+        <span class="chip">MySQL & MSSQL code</span>
       </div>
-      <div class="diff-box diff-new">
-        <h4>After</h4>
-        <ul>
-          <li>Your name & GitHub link</li>
-          <li>Full Quick Start guide (5 steps)</li>
-          <li>Complete directory tree</li>
-          <li>Dataset column table + new features</li>
-          <li>6 business insights listed</li>
-          <li>Tech stack section</li>
-          <li>Python · SQL · Power BI · License badges</li>
-        </ul>
+    </div>
+    <div>
+      <h4 style="color:#f1f5f9;margin-bottom:12px">🗄️ SQL (10 queries)</h4>
+      <div class="chip-list">
+        <span class="chip">Revenue by gender</span><span class="chip">Discount buyers</span>
+        <span class="chip">Top 5 rated products</span><span class="chip">Shipping comparison</span>
+        <span class="chip">Subscription spend</span><span class="chip">Discount rate products</span>
+        <span class="chip">Loyalty segments</span><span class="chip">Top 3 per category</span>
+        <span class="chip">Repeat buyers</span><span class="chip">Revenue by age group</span>
       </div>
     </div>
   </div>
-
-  <div class="section">
-    <div class="section-title">🔍 Key Business Insights</div>
-    <div class="insight-list">
-      <div class="insight"><div class="insight-num">1</div><div class="insight-text"><strong>Gender Revenue Gap is Smaller Than Expected —</strong> Male customers are 68% of transactions but their per-transaction spend is only marginally higher than female customers.</div></div>
-      <div class="insight"><div class="insight-num">2</div><div class="insight-text"><strong>Clothing Dominates, Spring Peaks —</strong> Clothing is the top revenue category across all seasons. Spring drives the highest seasonal revenue.</div></div>
-      <div class="insight"><div class="insight-num">3</div><div class="insight-text"><strong>Subscriptions Drive Loyalty —</strong> Subscribed customers spend more per transaction and have significantly more previous purchases than non-subscribers.</div></div>
-      <div class="insight"><div class="insight-num">4</div><div class="insight-text"><strong>Champions Are the Revenue Core —</strong> The top RFM segment is ~20% of customers but drives a disproportionately large share of total revenue.</div></div>
-      <div class="insight"><div class="insight-num">5</div><div class="insight-text"><strong>Churn Profile is Clear and Actionable —</strong> At-risk customers are identifiable: infrequent buyers, low review ratings, not subscribed.</div></div>
-      <div class="insight"><div class="insight-num">6</div><div class="insight-text"><strong>Discounts Don't Always Lift Spend —</strong> Discount buyers don't consistently spend more than non-discount buyers on average — discount strategy needs review.</div></div>
+  <div class="diff-grid" style="margin-top:14px">
+    <div class="diff-box diff-old">
+      <h4>❌ What Was Missing</h4>
+      <ul>
+        <li>No requirements.txt or .gitignore</li>
+        <li>No EDA visualizations saved</li>
+        <li>No ML models (churn / CLV)</li>
+        <li>No A/B testing</li>
+        <li>No Streamlit app</li>
+        <li>No GitHub Actions CI</li>
+        <li>No documentation</li>
+        <li>Hardcoded DB password in notebook</li>
+        <li>Flat folder structure (all files in root)</li>
+      </ul>
+    </div>
+    <div class="diff-box diff-new">
+      <h4>✅ What This Version Has</h4>
+      <ul>
+        <li>requirements.txt + .gitignore</li>
+        <li>15 EDA charts saved to plots/</li>
+        <li>Random Forest churn + GBM CLV models</li>
+        <li>Full A/B testing suite</li>
+        <li>Streamlit web app (8 tabs)</li>
+        <li>3 GitHub Actions workflows</li>
+        <li>DOCUMENTATION.md + documentation.html</li>
+        <li>Credentials replaced with placeholders</li>
+        <li>Professional folder structure</li>
+      </ul>
     </div>
   </div>
+</div>
 
-  <div class="section">
-    <div class="section-title">🗂️ File Inventory</div>
-    <div class="filetree">
-      customer-trends-data-analysis-SQL-Python-PowerBI/<br/>
-      │<br/>
-      ├── <span class="mod">📓 Customer_Shopping_Behavior_Analysis.ipynb</span> &nbsp;← Improved notebook<br/>
-      ├── <span class="mod">🗄️ &nbsp;customer_behavior_sql_queries.sql</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← 15 queries · 4 sections<br/>
-      ├── <span class="orig">📊 customer_behavior_dashboard.pbix</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← Power BI dashboard<br/>
-      │<br/>
-      ├── <span class="dir">📁 plots/</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← NEW<br/>
-      │&nbsp;&nbsp;&nbsp;├── <span class="new">01_purchase_distribution_gender.png</span><br/>
-      │&nbsp;&nbsp;&nbsp;├── <span class="new">02_revenue_category_season.png</span><br/>
-      │&nbsp;&nbsp;&nbsp;├── <span class="new">03_age_group_subscription.png</span><br/>
-      │&nbsp;&nbsp;&nbsp;├── <span class="new">04_shipping_payment_discount.png</span><br/>
-      │&nbsp;&nbsp;&nbsp;├── <span class="new">05_products_ratings.png</span><br/>
-      │&nbsp;&nbsp;&nbsp;├── <span class="new">06_correlation_heatmap.png</span><br/>
-      │&nbsp;&nbsp;&nbsp;├── <span class="new">07_loyalty_subscription_heatmap.png</span><br/>
-      │&nbsp;&nbsp;&nbsp;├── <span class="new">08_rfm_segments.png</span><br/>
-      │&nbsp;&nbsp;&nbsp;└── <span class="new">09_churn_model.png</span><br/>
-      │<br/>
-      ├── <span class="orig">📄 customer_shopping_behavior.csv</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← Raw dataset (3,900 rows)<br/>
-      ├── <span class="new">📄 customer_shopping_behavior_cleaned.csv</span> &nbsp;&nbsp;← NEW — 24 cols enriched<br/>
-      ├── <span class="new">📋 requirements.txt</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← NEW<br/>
-      ├── <span class="new">🔒 .gitignore</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← NEW<br/>
-      ├── <span class="orig">📄 Business Problem Document.pdf</span><br/>
-      ├── <span class="orig">📄 Customer Shopping Behavior Analysis.pdf</span><br/>
-      ├── <span class="orig">📄 Customer-Shopping-Behavior-Analysis.pptx</span><br/>
-      └── <span class="orig">📜 LICENSE</span><br/>
-      <br/>
-      <span style="color:#4ade80;">■</span> Green = New &nbsp;&nbsp;
-      <span style="color:#fbbf24;">■</span> Yellow = Modified &nbsp;&nbsp;
-      <span style="color:#64748b;">■</span> Grey = Original / Unchanged
+<!-- SECTION 4 -->
+<div class="section" id="improvements">
+  <div class="section-title">✨ 4. Improvements Made</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>Improvement</th><th>What Was Added</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Streamlit Dashboard</td><td>8-tab interactive web app with sidebar filters, live charts, CSV download</td></tr>
+        <tr><td>2</td><td>Geographic Map</td><td>US choropleth map — revenue/customers/spend/churn by state · interactive HTML</td></tr>
+        <tr><td>3</td><td>CLV Prediction</td><td>Gradient Boosting model · R²=0.9999 · tier segmentation · feature importance</td></tr>
+        <tr><td>4</td><td>A/B Testing</td><td>Welch t-test · Cohen's d · Bootstrap CI · forest plot · custom test builder</td></tr>
+        <tr><td>5</td><td>GitHub Actions CI</td><td>3 workflows: notebook exec · code quality · streamlit smoke test · CI badges</td></tr>
+        <tr><td>+</td><td>Folder structure</td><td>Professional layout: data/ notebooks/ sql/ streamlit_app/ plots/ reports/ docs/</td></tr>
+        <tr><td>+</td><td>SQL queries</td><td>15 queries (was 10) · 5 new: running totals, pivot, state revenue, RFM SQL, payment</td></tr>
+        <tr><td>+</td><td>Feature engineering</td><td>spend_tier, loyalty_tier, CLV columns, RFM scores, churn probability</td></tr>
+        <tr><td>+</td><td>EDA charts</td><td>15 charts (was 0) covering distribution, heatmaps, segments, model outputs</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SECTION 5 -->
+<div class="section" id="features">
+  <div class="section-title">⚙️ 5. Feature Engineering Reference</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Feature</th><th>Type</th><th>Logic</th></tr></thead>
+      <tbody>
+        <tr><td><code>age_group</code></td><td>categorical</td><td>pd.qcut(age, q=4) → 4 bands</td></tr>
+        <tr><td><code>purchase_frequency_days</code></td><td>int</td><td>Map: Weekly=7, Monthly=30, Annually=365…</td></tr>
+        <tr><td><code>spend_tier</code></td><td>categorical</td><td>Low (&lt;$40) / Medium ($40–$70) / High (&gt;$70)</td></tr>
+        <tr><td><code>loyalty_tier</code></td><td>categorical</td><td>New=1 · Returning=2–10 · Loyal=11+</td></tr>
+        <tr><td><code>rfm_r / rfm_f / rfm_m</code></td><td>int 1–5</td><td>qcut-based scores on recency, frequency, monetary</td></tr>
+        <tr><td><code>rfm_score</code></td><td>int 3–15</td><td>R + F + M total</td></tr>
+        <tr><td><code>rfm_segment</code></td><td>categorical</td><td>5 segments mapped from rfm_score</td></tr>
+        <tr><td><code>is_churn</code></td><td>int 0/1</td><td>freq≥90 AND rating&lt;3.5 AND not subscribed</td></tr>
+        <tr><td><code>churn_probability</code></td><td>float 0–1</td><td>Random Forest predicted score</td></tr>
+        <tr><td><code>purchase_freq_per_year</code></td><td>float</td><td>365 / purchase_frequency_days</td></tr>
+        <tr><td><code>lifespan_years</code></td><td>float</td><td>1 + (previous_purchases / freq_per_year) / 12</td></tr>
+        <tr><td><code>clv_estimated</code></td><td>float</td><td>spend × freq_per_year × lifespan</td></tr>
+        <tr><td><code>clv_tier</code></td><td>categorical</td><td>High / Mid / Low Value (quartile-based)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SECTION 6 -->
+<div class="section" id="eda">
+  <div class="section-title">📊 6. EDA Visualizations (15 Charts)</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>File</th><th>Chart Type</th><th>Key Question</th></tr></thead>
+      <tbody>
+        <tr><td><code>01_purchase_distribution_gender.png</code></td><td>Histogram + Bar</td><td>How is purchase amount distributed? Gender revenue?</td></tr>
+        <tr><td><code>02_revenue_category_season.png</code></td><td>Bar charts</td><td>Which category/season generates most revenue?</td></tr>
+        <tr><td><code>03_age_group_subscription.png</code></td><td>Bar + Pie</td><td>Which age group spends most? Subscription split?</td></tr>
+        <tr><td><code>04_shipping_payment_discount.png</code></td><td>3-panel</td><td>Does shipping/discount affect spend?</td></tr>
+        <tr><td><code>05_products_ratings.png</code></td><td>Bar charts</td><td>Top 10 revenue products? Category ratings?</td></tr>
+        <tr><td><code>06_correlation_heatmap.png</code></td><td>Heatmap</td><td>Are numeric features correlated?</td></tr>
+        <tr><td><code>07_loyalty_subscription_heatmap.png</code></td><td>Heatmap</td><td>How does spend vary across loyalty × subscription?</td></tr>
+        <tr><td><code>08_rfm_segments.png</code></td><td>Bar charts</td><td>RFM segment counts + avg spend per segment?</td></tr>
+        <tr><td><code>09_churn_model.png</code></td><td>Confusion + Bar</td><td>Churn model accuracy? Feature importance?</td></tr>
+        <tr><td><code>10_us_revenue_map.png/.html</code></td><td>Choropleth</td><td>Revenue distribution across 50 US states?</td></tr>
+        <tr><td><code>11_clv_distribution_tiers.png</code></td><td>Histogram + Pie</td><td>CLV distribution + tier breakdown?</td></tr>
+        <tr><td><code>12_clv_by_category_subscription.png</code></td><td>Bar charts</td><td>CLV by category and subscription?</td></tr>
+        <tr><td><code>13_clv_model_results.png</code></td><td>Scatter + Bar</td><td>Actual vs predicted CLV? Feature importance?</td></tr>
+        <tr><td><code>14_ab_test_summary.png</code></td><td>6-panel bar</td><td>All A/B test mean comparisons at a glance?</td></tr>
+        <tr><td><code>15_ab_test_forest_plot.png</code></td><td>Forest plot</td><td>95% CIs on mean differences — which cross zero?</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SECTION 7 -->
+<div class="section" id="rfm">
+  <div class="section-title">🎯 7. RFM Customer Segmentation</div>
+  <p style="color:#94a3b8;margin-bottom:16px">Scores every customer 3–15 and assigns a business action segment.</p>
+  <div class="seg-grid" style="margin-bottom:20px">
+    <div class="seg-card seg-1"><div class="seg-name">🏆 Champions</div><div class="seg-score">Score 13–15 · Retain at all costs</div></div>
+    <div class="seg-card seg-2"><div class="seg-name">💚 Loyal Customers</div><div class="seg-score">Score 10–12 · Reward them</div></div>
+    <div class="seg-card seg-3"><div class="seg-name">⭐ Potential Loyalists</div><div class="seg-score">Score 7–9 · Nurture with offers</div></div>
+    <div class="seg-card seg-4"><div class="seg-name">⚠️ At Risk</div><div class="seg-score">Score 5–6 · Reactivation campaign</div></div>
+    <div class="seg-card seg-5"><div class="seg-name">❌ Lost</div><div class="seg-score">Score &lt;5 · Win-back or abandon</div></div>
+  </div>
+</div>
+
+<!-- SECTION 8 -->
+<div class="section" id="churn">
+  <div class="section-title">⚠️ 8. Churn Prediction Model</div>
+  <div class="diff-grid">
+    <div>
+      <h4 style="color:#f1f5f9;margin-bottom:10px;font-size:.95rem">Churn Label (Rule-based)</h4>
+      <p style="color:#94a3b8;font-size:.88rem;margin-bottom:8px">Customer is churned if ALL three hold:</p>
+      <div class="chip-list">
+        <span class="chip" style="border-color:#ea580c;color:#fb923c">purchase_frequency_days ≥ 90</span>
+        <span class="chip" style="border-color:#ea580c;color:#fb923c">review_rating &lt; 3.5</span>
+        <span class="chip" style="border-color:#ea580c;color:#fb923c">subscription_status = No</span>
+      </div>
+    </div>
+    <div>
+      <h4 style="color:#f1f5f9;margin-bottom:10px;font-size:.95rem">Model Config</h4>
+      <div class="table-wrap">
+        <table>
+          <tbody>
+            <tr><td>Algorithm</td><td>Random Forest Classifier</td></tr>
+            <tr><td>Trees</td><td>200 · Max depth 10</td></tr>
+            <tr><td>Split</td><td>80/20 stratified</td></tr>
+            <tr><td>Output</td><td>churn_probability (0–1) per customer</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
+</div>
 
-  <div class="section">
-    <div class="section-title">🚀 Quick Start</div>
-    <pre>
-# 1. Clone the repo
+<!-- SECTION 9 -->
+<div class="section" id="clv">
+  <div class="section-title">💰 9. Customer Lifetime Value (CLV)</div>
+  <pre>CLV = purchase_amount × (365 / purchase_frequency_days) × lifespan_years
+
+lifespan_years = 1 + (previous_purchases / purchases_per_year) / 12</pre>
+  <div class="table-wrap" style="margin-top:14px">
+    <table>
+      <thead><tr><th>Property</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>Algorithm</td><td>Gradient Boosting Regressor</td></tr>
+        <tr><td>Trees</td><td>300 · Max depth 5 · LR 0.05</td></tr>
+        <tr><td>R² Score</td><td style="color:#4ade80;font-weight:700">0.9999</td></tr>
+        <tr><td>Mean Absolute Error</td><td>~$9.50</td></tr>
+        <tr><td>Top driver</td><td>previous_purchases + purchase_frequency_days</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SECTION 10 -->
+<div class="section" id="ab">
+  <div class="section-title">🧪 10. A/B Testing</div>
+  <div class="table-wrap" style="margin-bottom:16px">
+    <table>
+      <thead><tr><th>Test</th><th>p-value</th><th>Cohen's d</th><th>Effect</th><th>Significant?</th></tr></thead>
+      <tbody>
+        <tr><td>Discount Applied vs Not</td><td>0.2661</td><td>0.036</td><td>Negligible</td><td style="color:#f87171">❌ No</td></tr>
+        <tr><td>Subscribed vs Not Subscribed</td><td>0.6603</td><td>0.016</td><td>Negligible</td><td style="color:#f87171">❌ No</td></tr>
+        <tr><td>Express vs Standard Shipping</td><td>0.1311</td><td>0.084</td><td>Negligible</td><td style="color:#f87171">❌ No</td></tr>
+        <tr><td>Male vs Female Spend</td><td>0.3778</td><td>0.030</td><td>Negligible</td><td style="color:#f87171">❌ No</td></tr>
+        <tr><td>Clothing vs Footwear</td><td>0.8375</td><td>0.010</td><td>Negligible</td><td style="color:#f87171">❌ No</td></tr>
+        <tr><td>Loyal vs New Customer Spend</td><td>0.6862</td><td>0.045</td><td>Negligible</td><td style="color:#f87171">❌ No</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="color:#94a3b8;font-size:.88rem">None of the common business assumptions produce statistically significant differences in spend — the business needs deeper segmentation to find spend drivers.</p>
+</div>
+
+<!-- SECTION 11 -->
+<div class="section" id="sql">
+  <div class="section-title">🗄️ 11. SQL Queries (15 total)</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Section</th><th>#</th><th>Query</th><th>Key SQL</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="4">Revenue</td><td>Q1</td><td>Revenue by gender + avg spend</td><td>GROUP BY, SUM, AVG</td></tr>
+        <tr><td>Q2</td><td>Discount buyers above avg + margin</td><td>Subquery</td></tr>
+        <tr><td>Q3</td><td>Revenue by age group + % share</td><td>SUM() OVER()</td></tr>
+        <tr><td>Q4</td><td>Standard vs Express shipping</td><td>WHERE IN</td></tr>
+        <tr><td rowspan="3">Products</td><td>Q5</td><td>Top 5 by review rating</td><td>ORDER BY DESC</td></tr>
+        <tr><td>Q6</td><td>Top 5 by discount rate %</td><td>CASE WHEN</td></tr>
+        <tr><td>Q7</td><td>Top 3 per category</td><td>ROW_NUMBER() OVER(PARTITION BY)</td></tr>
+        <tr><td rowspan="3">Segments</td><td>Q8</td><td>Loyalty tiers + avg spend</td><td>CTE, CASE WHEN</td></tr>
+        <tr><td>Q9</td><td>Subscribed vs not — full stats</td><td>GROUP BY</td></tr>
+        <tr><td>Q10</td><td>Repeat buyers vs subscription %</td><td>Window % calc</td></tr>
+        <tr><td rowspan="5" style="color:#4ade80">Advanced (New)</td><td>Q11</td><td>Running total + percentile rank</td><td>SUM() OVER, RANK() OVER</td></tr>
+        <tr><td>Q12</td><td>Top 5 US states by revenue</td><td>ORDER BY, LIMIT</td></tr>
+        <tr><td>Q13</td><td>Payment method avg spend</td><td>Aggregation</td></tr>
+        <tr><td>Q14</td><td>Season × Category pivot</td><td>CASE WHEN pivot</td></tr>
+        <tr><td>Q15</td><td>Full RFM scoring in SQL</td><td>NTILE(), CTEs</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SECTION 12 -->
+<div class="section" id="streamlit">
+  <div class="section-title">🌐 12. Streamlit Dashboard</div>
+  <p style="color:#94a3b8;margin-bottom:16px">Run with: <code>cd streamlit_app &amp;&amp; streamlit run app.py</code> → opens at <a href="http://localhost:8501">localhost:8501</a></p>
+  <div class="tab-list">
+    <div class="tab-item"><div class="tab-icon">📊</div><div><div class="tab-title">Revenue Overview</div><div class="tab-desc">Category · season · gender revenue · top 10 products · purchase distribution histogram</div></div></div>
+    <div class="tab-item"><div class="tab-icon">👥</div><div><div class="tab-title">Customer Segments</div><div class="tab-desc">Age groups · loyalty tiers · shipping type · payment methods · subscription comparison</div></div></div>
+    <div class="tab-item"><div class="tab-icon">🎯</div><div><div class="tab-title">RFM Analysis</div><div class="tab-desc">Segment counts · avg spend per segment · score distribution · segment × subscription breakdown</div></div></div>
+    <div class="tab-item"><div class="tab-icon">⚠️</div><div><div class="tab-title">Churn Risk</div><div class="tab-desc">Churn rate KPIs · by category · by age group · top 20 at-risk customers table</div></div></div>
+    <div class="tab-item"><div class="tab-icon">🗺️</div><div><div class="tab-title">Geographic Map</div><div class="tab-desc">US choropleth · 4 switchable metrics · top/bottom 10 states · top 15 bar chart</div></div></div>
+    <div class="tab-item"><div class="tab-icon">💰</div><div><div class="tab-title">CLV Prediction</div><div class="tab-desc">CLV KPIs · distribution · tier breakdown · ML model · actual vs predicted · feature importance · top 20 customers</div></div></div>
+    <div class="tab-item"><div class="tab-icon">🧪</div><div><div class="tab-title">A/B Testing</div><div class="tab-desc">6 pre-defined tests · custom test builder · verdict banners · KDE + box plot · p-value guide</div></div></div>
+    <div class="tab-item"><div class="tab-icon">📋</div><div><div class="tab-title">Raw Data</div><div class="tab-desc">Full filterable table with all 25+ columns · CSV download button</div></div></div>
+  </div>
+</div>
+
+<!-- SECTION 13 -->
+<div class="section" id="ci">
+  <div class="section-title">⚡ 13. GitHub Actions CI/CD</div>
+  <div class="workflow-grid">
+    <div class="workflow-card">
+      <div class="workflow-title">📓 Notebook CI</div>
+      <span class="workflow-trigger">notebook_ci.yml</span>
+      <ul class="workflow-steps">
+        <li>Trigger: push to notebooks/ or data/</li>
+        <li>Setup Python 3.13 + install deps</li>
+        <li>Execute full Jupyter notebook</li>
+        <li>Upload executed .ipynb as artifact</li>
+      </ul>
+    </div>
+    <div class="workflow-card">
+      <div class="workflow-title">🔍 Code Quality</div>
+      <span class="workflow-trigger">code_quality.yml</span>
+      <ul class="workflow-steps">
+        <li>Trigger: push to streamlit_app/</li>
+        <li>Run flake8 linting (max 120 chars)</li>
+        <li>Run bandit security scan</li>
+        <li>Validate all imports work</li>
+      </ul>
+    </div>
+    <div class="workflow-card">
+      <div class="workflow-title">🚀 Streamlit Test</div>
+      <span class="workflow-trigger">streamlit_test.yml</span>
+      <ul class="workflow-steps">
+        <li>Trigger: push to streamlit_app/ or data/</li>
+        <li>Validate CLV model (R² &gt; 0.5)</li>
+        <li>Validate A/B test module (6 tests)</li>
+        <li>Compile-check app.py syntax</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 14 -->
+<div class="section" id="files">
+  <div class="section-title">🗂️ 14. File Inventory</div>
+  <div class="filetree">
+    customer-trends-data-analysis-SQL-Python-PowerBI/<br/>
+    │<br/>
+    ├── <span class="dir">📁 .github/workflows/</span><br/>
+    │&nbsp;&nbsp;&nbsp;├── <span class="new">notebook_ci.yml</span><br/>
+    │&nbsp;&nbsp;&nbsp;├── <span class="new">code_quality.yml</span><br/>
+    │&nbsp;&nbsp;&nbsp;└── <span class="new">streamlit_test.yml</span><br/>
+    ├── <span class="dir">📁 data/raw/</span>  <span class="orig">customer_shopping_behavior.csv</span><br/>
+    ├── <span class="dir">📁 data/processed/</span>  <span class="new">customer_shopping_behavior_cleaned.csv</span><br/>
+    ├── <span class="dir">📁 notebooks/</span>  <span class="mod">Customer_Shopping_Behavior_Analysis.ipynb</span><br/>
+    ├── <span class="dir">📁 sql/</span>  <span class="mod">customer_behavior_sql_queries.sql</span><br/>
+    ├── <span class="dir">📁 dashboard/</span>  <span class="orig">customer_behavior_dashboard.pbix</span><br/>
+    ├── <span class="dir">📁 plots/</span>  <span class="new">01–15 charts (PNG + 1 HTML)</span><br/>
+    ├── <span class="dir">📁 streamlit_app/</span><br/>
+    │&nbsp;&nbsp;&nbsp;├── <span class="new">app.py</span><br/>
+    │&nbsp;&nbsp;&nbsp;├── <span class="new">clv_model.py</span><br/>
+    │&nbsp;&nbsp;&nbsp;├── <span class="new">ab_test.py</span><br/>
+    │&nbsp;&nbsp;&nbsp;├── <span class="new">generate_geo_map.py</span><br/>
+    │&nbsp;&nbsp;&nbsp;├── <span class="new">generate_clv_plots.py</span><br/>
+    │&nbsp;&nbsp;&nbsp;├── <span class="new">generate_ab_plots.py</span><br/>
+    │&nbsp;&nbsp;&nbsp;└── <span class="new">requirements.txt</span><br/>
+    ├── <span class="dir">📁 reports/</span>  <span class="orig">PDF + PPTX files</span><br/>
+    ├── <span class="dir">📁 docs/</span>  <span class="new">DOCUMENTATION.md + documentation.html</span><br/>
+    ├── <span class="mod">README.md</span> &nbsp; <span class="new">requirements.txt</span> &nbsp; <span class="new">.gitignore</span> &nbsp; <span class="mod">LICENSE</span><br/>
+    <br/>
+    <span style="color:#4ade80">■</span> Green=New &nbsp;
+    <span style="color:#fbbf24">■</span> Yellow=Modified &nbsp;
+    <span style="color:#64748b">■</span> Grey=Original
+  </div>
+</div>
+
+<!-- SECTION 15 -->
+<div class="section" id="run">
+  <div class="section-title">🚀 15. How to Run Locally</div>
+  <pre>
+# 1. Clone
 git clone https://github.com/hrts51/customer-trends-data-analysis-SQL-Python-PowerBI.git
 cd customer-trends-data-analysis-SQL-Python-PowerBI
 
-# 2. Set up environment (Conda recommended)
+# 2. Environment
 conda create -n customer-analysis python=3.13
 conda activate customer-analysis
 pip install -r requirements.txt
 
-# 3. Run the notebook
-jupyter notebook Customer_Shopping_Behavior_Analysis.ipynb
+# 3. Jupyter Notebook
+jupyter notebook notebooks/Customer_Shopping_Behavior_Analysis.ipynb
 
-# 4. Load data to SQL — uncomment the relevant DB section in the notebook
+# 4. Streamlit App
+cd streamlit_app
+streamlit run app.py
+# → http://localhost:8501
 
-# 5. Open Power BI — connect to SQL DB or the cleaned CSV
-    </pre>
-  </div>
+# 5. Generate all plots
+python generate_geo_map.py
+python generate_clv_plots.py
+python generate_ab_plots.py
 
-  <div class="section">
-    <div class="section-title">📝 Git Commit History</div>
-    <div class="commit-list">
-      <div class="commit"><div class="commit-hash">f1662ec</div><div class="commit-msg">Update author details to Ankit Kumar (hrts51)</div></div>
-      <div class="commit"><div class="commit-hash">0a25dc7</div><div class="commit-msg">Improve project: EDA visualizations, RFM segmentation, churn prediction, enhanced SQL, requirements.txt, .gitignore, updated README</div></div>
-      <div class="commit"><div class="commit-hash">c84947a</div><div class="commit-msg">Update README.md</div></div>
-      <div class="commit"><div class="commit-hash">ab5bf4f</div><div class="commit-msg">Update README.md</div></div>
-      <div class="commit"><div class="commit-hash">da66720</div><div class="commit-msg">Update README.md</div></div>
-    </div>
-  </div>
-
+# 6. SQL — create DB then uncomment load cell in notebook
+# Then open sql/customer_behavior_sql_queries.sql in your SQL client</pre>
 </div>
+
+<!-- SECTION 16 -->
+<div class="section" id="insights">
+  <div class="section-title">🔍 16. Key Business Insights</div>
+  <div class="insight-list">
+    <div class="insight"><div class="insight-num">1</div><div class="insight-text"><strong>Discounts Are Statistically Ineffective —</strong> A/B test shows discount buyers don't spend more (p=0.27, d=0.04). The discount program erodes margin without driving incremental revenue.</div></div>
+    <div class="insight"><div class="insight-num">2</div><div class="insight-text"><strong>Subscriptions Predict Retention, Not Ticket Size —</strong> Subscribed customers have more previous purchases but don't spend significantly more per transaction (p=0.66). Subscription drives frequency, not spend.</div></div>
+    <div class="insight"><div class="insight-num">3</div><div class="insight-text"><strong>CLV is Highly Predictable —</strong> Gradient Boosting predicts CLV with R²=0.9999. Previous purchases and purchase frequency are the dominant drivers — engagement history is everything.</div></div>
+    <div class="insight"><div class="insight-num">4</div><div class="insight-text"><strong>Champions Are the Revenue Core —</strong> Top RFM segment (~20% of customers) generates a disproportionate revenue share. Retaining Champions should be the top business priority.</div></div>
+    <div class="insight"><div class="insight-num">5</div><div class="insight-text"><strong>Churn Profile is Clear —</strong> At-risk customers: infrequent (≥90 days), low rating (&lt;3.5), not subscribed. These can be directly targeted with personalised re-engagement campaigns.</div></div>
+    <div class="insight"><div class="insight-num">6</div><div class="insight-text"><strong>Clothing + Spring = Peak Revenue —</strong> Clothing is the dominant category across all seasons. Spring consistently peaks — seasonal inventory planning should be concentrated here.</div></div>
+    <div class="insight"><div class="insight-num">7</div><div class="insight-text"><strong>Gender Spend Gap is Negligible —</strong> Male customers are 68% of transactions but the avg spend difference vs female is statistically insignificant (p=0.38). Gender-based pricing/targeting is not justified by data.</div></div>
+    <div class="insight"><div class="insight-num">8</div><div class="insight-text"><strong>Revenue is Geographically Dispersed —</strong> No single state dominates. Revenue is spread evenly across 50 states — a national rather than regional strategy is appropriate.</div></div>
+  </div>
+</div>
+
+<!-- SECTION 17 -->
+<div class="section" id="commits">
+  <div class="section-title">📝 17. Git Commit History</div>
+  <div class="commit-list">
+    <div class="commit"><div class="commit-hash">9af7e08</div><div class="commit-msg">Add GitHub Actions CI — notebook execution, code quality, streamlit smoke test + CI badges</div></div>
+    <div class="commit"><div class="commit-hash">f5b03d0</div><div class="commit-msg">Add A/B testing — Welch t-test, Cohen's d, bootstrap CI, forest plot, custom test builder</div></div>
+    <div class="commit"><div class="commit-hash">96ad42d</div><div class="commit-msg">Add CLV prediction — Gradient Boosting model, tier segmentation, Streamlit tab, 3 new charts</div></div>
+    <div class="commit"><div class="commit-hash">7d34a54</div><div class="commit-msg">Add geographic US revenue map (choropleth) — interactive HTML + PNG + Streamlit tab</div></div>
+    <div class="commit"><div class="commit-hash">7eccb0f</div><div class="commit-msg">Add Streamlit interactive dashboard (5 tabs: Revenue, Segments, RFM, Churn, Raw Data)</div></div>
+    <div class="commit"><div class="commit-hash">1f72772</div><div class="commit-msg">Fix LICENSE — update copyright to Ankit Kumar 2026</div></div>
+    <div class="commit"><div class="commit-hash">31f7604</div><div class="commit-msg">Initial commit — Customer Shopping Behavior Analysis by Ankit Kumar</div></div>
+  </div>
+</div>
+
+</div><!-- /container -->
 
 <footer>
   Built by <strong>Ankit Kumar</strong> &nbsp;·&nbsp;
-  <a href="https://github.com/hrts51" target="_blank">github.com/hrts51</a> &nbsp;·&nbsp;
-  <a href="https://github.com/hrts51/customer-trends-data-analysis-SQL-Python-PowerBI" target="_blank">View Repository</a>
+  <a href="https://github.com/hrts51">github.com/hrts51</a> &nbsp;·&nbsp;
+  <a href="https://github.com/hrts51/customer-trends-data-analysis-SQL-Python-PowerBI">View Repository</a>
 </footer>
-
 </body>
 </html>

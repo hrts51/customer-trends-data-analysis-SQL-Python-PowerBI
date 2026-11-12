@@ -3,7 +3,7 @@
 **Author:** Ankit Kumar  
 **GitHub:** [github.com/hrts51](https://github.com/hrts51)  
 **Repository:** [customer-trends-data-analysis-SQL-Python-PowerBI](https://github.com/hrts51/customer-trends-data-analysis-SQL-Python-PowerBI)  
-**Stack:** Python 3.13 · SQL (PostgreSQL / MySQL / MS SQL Server) · Power BI  
+**Stack:** Python 3.13 · SQL · Power BI · Streamlit · GitHub Actions  
 
 ---
 
@@ -11,31 +11,38 @@
 
 1. [Project Purpose](#1-project-purpose)
 2. [Dataset Overview](#2-dataset-overview)
-3. [What Was Already Done (Original)](#3-what-was-already-done-original)
-4. [What Was Improved (This Version)](#4-what-was-improved-this-version)
+3. [What Was in the Original Project](#3-what-was-in-the-original-project)
+4. [Improvements & New Features](#4-improvements--new-features)
 5. [Feature Engineering Reference](#5-feature-engineering-reference)
-6. [EDA Visualizations](#6-eda-visualizations)
+6. [EDA Visualizations (15 charts)](#6-eda-visualizations)
 7. [RFM Customer Segmentation](#7-rfm-customer-segmentation)
 8. [Churn Prediction Model](#8-churn-prediction-model)
-9. [SQL Queries Reference](#9-sql-queries-reference)
-10. [File Inventory](#10-file-inventory)
-11. [How to Run Locally](#11-how-to-run-locally)
-12. [Key Business Insights](#12-key-business-insights)
-13. [Git Commit History](#13-git-commit-history)
+9. [Customer Lifetime Value (CLV)](#9-customer-lifetime-value-clv)
+10. [A/B Testing](#10-ab-testing)
+11. [SQL Queries Reference](#11-sql-queries-reference)
+12. [Streamlit Dashboard](#12-streamlit-dashboard)
+13. [GitHub Actions CI/CD](#13-github-actions-cicd)
+14. [File Inventory](#14-file-inventory)
+15. [How to Run Locally](#15-how-to-run-locally)
+16. [Key Business Insights](#16-key-business-insights)
+17. [Git Commit History](#17-git-commit-history)
 
 ---
 
 ## 1. Project Purpose
 
-This is an end-to-end data analytics portfolio project that simulates a real corporate analyst workflow. Starting from a raw retail dataset of 3,900 customer transactions, the project demonstrates every stage of the analytics pipeline:
+An end-to-end data analytics + data science portfolio project built on retail customer transaction data. The project demonstrates every stage of a real corporate analytics workflow:
 
-- **Data preparation** — cleaning, imputation, column standardisation
-- **Feature engineering** — creating new analytical dimensions
-- **Exploratory analysis** — visual storytelling with charts
-- **Customer segmentation** — RFM scoring and behavioural grouping
-- **Predictive modelling** — churn probability with Random Forest
-- **SQL analytics** — 15 business queries across 4 categories
-- **Dashboard** — interactive Power BI report
+| Stage | Technique |
+|---|---|
+| Data preparation | Cleaning, imputation, feature engineering |
+| Exploratory analysis | 15 visualizations across 6 categories |
+| Customer segmentation | RFM scoring, loyalty tiers, spend tiers |
+| Machine learning | Churn prediction (Random Forest), CLV prediction (Gradient Boosting) |
+| Statistical testing | A/B tests with Welch's t-test, Cohen's d, Bootstrap CI |
+| SQL analytics | 15 business queries across 4 sections |
+| Dashboard | Interactive Power BI + Streamlit web app (8 tabs) |
+| Automation | GitHub Actions CI — 3 workflows |
 
 ---
 
@@ -43,11 +50,11 @@ This is an end-to-end data analytics portfolio project that simulates a real cor
 
 | Property | Value |
 |---|---|
-| File | `customer_shopping_behavior.csv` |
+| File | `data/raw/customer_shopping_behavior.csv` |
 | Rows | 3,900 |
 | Original columns | 18 |
-| Final columns (after engineering) | 24 |
-| Missing values | 37 (only in `Review Rating`) |
+| Final columns | 25+ (after engineering) |
+| Missing values | 37 (Review Rating — imputed with category median) |
 
 ### Original Columns
 
@@ -65,92 +72,69 @@ This is an end-to-end data analytics portfolio project that simulates a real cor
 | Season | string | Spring / Summer / Fall / Winter |
 | Review Rating | float | 2.5–5.0 · 37 null values |
 | Subscription Status | string | Yes / No |
-| Shipping Type | string | 6 types (Free Shipping, Express, Standard, etc.) |
+| Shipping Type | string | 6 types |
 | Discount Applied | string | Yes / No |
-| Promo Code Used | string | Yes / No — identical to Discount Applied (dropped) |
-| Previous Purchases | int | Count of past purchases (1–50) |
-| Payment Method | string | 6 methods (PayPal, Credit Card, Venmo, etc.) |
-| Frequency of Purchases | string | Weekly / Fortnightly / Monthly / Quarterly / Annually / Every 3 Months |
+| Promo Code Used | string | Identical to Discount Applied — dropped |
+| Previous Purchases | int | 1–50 |
+| Payment Method | string | 6 methods |
+| Frequency of Purchases | string | Weekly / Monthly / Annually / etc. |
 
 ---
 
-## 3. What Was Already Done (Original)
+## 3. What Was in the Original Project
+
+The base project (before improvements) contained:
 
 ### Python Notebook
-- Loaded CSV using `pandas`
-- Ran `df.info()` and `df.describe(include='all')` for initial exploration
-- Checked null values — found 37 missing in `Review Rating`
-- Imputed `Review Rating` nulls using **per-category median**
-- Renamed all columns to `snake_case`
-- Verified `promo_code_used == discount_applied` for all rows → dropped `promo_code_used`
-- Created `age_group` column using `pd.qcut()` (4 equal-frequency bins)
-- Created `purchase_frequency_days` by mapping text labels to numeric days
-- Connected to **PostgreSQL** via `sqlalchemy + psycopg2` and loaded `df` into a `customer` table
-- Included commented code for **MySQL** (`pymysql`) and **MS SQL Server** (`pyodbc`) connections
+- Load CSV, `df.info()`, `df.describe()`
+- Null imputation for Review Rating (category median)
+- Column rename to snake_case
+- Drop redundant `promo_code_used`
+- `age_group` via `pd.qcut()`
+- `purchase_frequency_days` mapping
+- PostgreSQL / MySQL / MSSQL load code
 
-### SQL Queries (10 original)
+### SQL (10 queries)
+Revenue by gender, discount buyers above average, top 5 products by rating, shipping comparison, subscription spend, discount rate by product, loyalty segments, top 3 per category, repeat buyers vs subscription, revenue by age group.
 
-| # | Question |
-|---|---|
-| Q1 | Total revenue by gender |
-| Q2 | Customers who used discount but spent above average |
-| Q3 | Top 5 products by average review rating |
-| Q4 | Avg purchase amount: Standard vs Express shipping |
-| Q5 | Subscribed vs non-subscribed — avg spend and total revenue |
-| Q6 | Top 5 products by discount usage rate % |
-| Q7 | Customer count per loyalty segment (New / Returning / Loyal) |
-| Q8 | Top 3 most purchased products per category (ROW_NUMBER window function) |
-| Q9 | Repeat buyers (>5 purchases) vs subscription status |
-| Q10 | Revenue contribution by age group |
+### Other files
+Power BI dashboard, business problem PDF, project report PDF, presentation PPTX.
 
-### Other Files
-- `customer_behavior_dashboard.pbix` — Power BI dashboard
-- `Business Problem Document.pdf` — business problem statement
-- `Customer Shopping Behavior Analysis.pdf` — project report
-- `Customer-Shopping-Behavior-Analysis.pptx` — presentation deck
+### What was missing
+No requirements.txt, no .gitignore, no EDA charts, no ML models, no CLV, no A/B testing, no Streamlit app, no CI/CD, no documentation, hardcoded DB password, flat folder structure.
 
 ---
 
-## 4. What Was Improved (This Version)
+## 4. Improvements & New Features
 
-### New Files
-| File | Description |
-|---|---|
-| `requirements.txt` | Pinned dependencies for reproducible Python environment |
-| `.gitignore` | Covers Python cache, venv, secrets, OS files, Jupyter checkpoints |
-| `customer_shopping_behavior_cleaned.csv` | Cleaned + enriched dataset (24 columns) for Power BI or further analysis |
-| `plots/` (9 PNG files) | All EDA and model visualisations saved as PNG images |
-| `DOCUMENTATION.md` | This file |
-| `documentation.html` | Styled HTML version of this documentation |
+### 4.1 Project Structure
+Reorganised from flat root into professional folders:
+```
+data/raw/  data/processed/  notebooks/  sql/
+dashboard/  plots/  reports/  docs/  streamlit_app/  .github/workflows/
+```
 
-### Notebook Improvements
-- Added duplicate row check
-- Added missing value % display
-- Added 3 new engineered features: `spend_tier`, `loyalty_tier`, plus full RFM + churn columns
-- Added complete EDA section with 9 charts
-- Added RFM segmentation section
-- Added churn prediction model section
-- Added cleaned CSV export
-- Removed hardcoded database password — replaced with clearly labelled placeholder variables
-- Updated author line to Ankit Kumar
+### 4.2 Foundation Files
+- `requirements.txt` — pinned dependencies
+- `.gitignore` — Python, Jupyter, secrets, OS files
+- `LICENSE` — updated to Ankit Kumar 2026
+- `DOCUMENTATION.md` + `documentation.html` — this file
 
-### SQL Improvements
-- Added 5 new queries (Q11–Q15)
-- Organised into 4 labelled sections
-- Added consistent formatting, column aliases, and comments throughout
-- Added revenue % contribution using `SUM() OVER()` window function
-- Added `above_avg_by` calculated column in Q2
-- Added `avg_spend` join in loyalty segment query
+### 4.3 Python Notebook Enhancements
+- Duplicate row check added
+- Missing % display added
+- 3 new engineered features: `spend_tier`, `loyalty_tier`, CLV columns
+- Complete EDA section (9 charts)
+- RFM segmentation section
+- Churn prediction model section
+- Cleaned CSV export
+- Removed hardcoded credentials
 
-### README Improvements
-- Removed all original author references
-- Added your name and GitHub link
-- Added project structure tree
-- Added dataset summary table
-- Added 5-step Quick Start guide
-- Added 6 key business insights
-- Added tech stack section
-- Added Python / SQL / Power BI / License badges
+### 4.4 Streamlit Web App (`streamlit_app/`)
+Full interactive dashboard — see [Section 12](#12-streamlit-dashboard)
+
+### 4.5 GitHub Actions CI/CD (`.github/workflows/`)
+3 automated workflows — see [Section 13](#13-github-actions-cicd)
 
 ---
 
@@ -158,259 +142,372 @@ This is an end-to-end data analytics portfolio project that simulates a real cor
 
 | Feature | Type | Logic |
 |---|---|---|
-| `age_group` | categorical | `pd.qcut(age, q=4)` → Young Adult / Adult / Middle-aged / Senior |
-| `purchase_frequency_days` | int | Map text → days: Weekly=7, Fortnightly=14, Monthly=30, Quarterly=90, Annually=365 |
-| `spend_tier` | categorical | `pd.cut(purchase_amount, bins=[0,40,70,100])` → Low / Medium / High |
-| `loyalty_tier` | categorical | `previous_purchases`: 1=New, 2–10=Returning, 11+=Loyal |
-| `rfm_r` | int (1–5) | Recency score — based on `purchase_frequency_days` (lower days = higher score) |
-| `rfm_f` | int (1–5) | Frequency score — based on `previous_purchases` (rank-based qcut) |
-| `rfm_m` | int (1–5) | Monetary score — based on `purchase_amount` (qcut) |
-| `rfm_score` | int (3–15) | Sum of rfm_r + rfm_f + rfm_m |
-| `rfm_segment` | categorical | Mapped from rfm_score (see Section 7) |
-| `is_churn` | int (0/1) | Rule: frequency_days≥90 AND review_rating<3.5 AND subscription=No |
-| `churn_probability` | float (0–1) | Random Forest predicted probability of churn |
+| `age_group` | categorical | `pd.qcut(age, q=4)` → 4 age bands |
+| `purchase_frequency_days` | int | Map text → days (Weekly=7 … Annually=365) |
+| `spend_tier` | categorical | `pd.cut` → Low / Medium / High |
+| `loyalty_tier` | categorical | 1=New · 2–10=Returning · 11+=Loyal |
+| `rfm_r` | int 1–5 | Recency score (lower days = higher score) |
+| `rfm_f` | int 1–5 | Frequency score (higher purchases = higher) |
+| `rfm_m` | int 1–5 | Monetary score (higher spend = higher) |
+| `rfm_score` | int 3–15 | R + F + M total |
+| `rfm_segment` | categorical | Mapped from rfm_score (5 segments) |
+| `is_churn` | int 0/1 | Rule-based churn label |
+| `churn_probability` | float 0–1 | Random Forest predicted probability |
+| `purchase_freq_per_year` | float | 365 / purchase_frequency_days |
+| `lifespan_years` | float | Estimated customer lifespan |
+| `clv_estimated` | float | Spend × Freq/yr × Lifespan |
+| `clv_tier` | categorical | High / Mid / Low Value (quartile-based) |
 
 ---
 
 ## 6. EDA Visualizations
 
-All charts saved to the `plots/` folder.
+All 15 charts saved to `plots/`.
 
-| File | Chart Type | Key Question Answered |
+| File | Chart | Insight |
 |---|---|---|
-| `01_purchase_distribution_gender.png` | Histogram + Bar | How is purchase amount distributed? Which gender generates more revenue? |
-| `02_revenue_category_season.png` | Horizontal bar + Bar | Which product category earns most? Which season peaks? |
-| `03_age_group_subscription.png` | Bar + Pie | Which age group spends most? What is the subscription split? |
-| `04_shipping_payment_discount.png` | 3-panel bar | Does shipping type affect spend? Which payment method is most used? Do discounts lift spend? |
-| `05_products_ratings.png` | Horizontal bar + Bar | What are the top 10 revenue products? How do categories compare on ratings? |
-| `06_correlation_heatmap.png` | Heatmap | Are any numeric features correlated with purchase amount? |
-| `07_loyalty_subscription_heatmap.png` | Heatmap | How does avg spend vary across loyalty tier × subscription combinations? |
-| `08_rfm_segments.png` | Bar + Horizontal bar | How many customers per segment? What is the avg spend per segment? |
-| `09_churn_model.png` | Confusion matrix + Bar | How accurate is the churn model? Which features drive churn? |
+| `01_purchase_distribution_gender.png` | Histogram + Bar | Purchase distribution + gender revenue |
+| `02_revenue_category_season.png` | Bar charts | Category and seasonal revenue |
+| `03_age_group_subscription.png` | Bar + Pie | Age group revenue + subscription split |
+| `04_shipping_payment_discount.png` | 3-panel | Shipping spend · payment usage · discount impact |
+| `05_products_ratings.png` | Bar charts | Top 10 products + category ratings |
+| `06_correlation_heatmap.png` | Heatmap | Numeric feature correlations |
+| `07_loyalty_subscription_heatmap.png` | Heatmap | Avg spend: loyalty × subscription |
+| `08_rfm_segments.png` | Bar charts | RFM segment counts + avg spend |
+| `09_churn_model.png` | Confusion + Bar | Churn model accuracy + feature importance |
+| `10_us_revenue_map.png` / `.html` | Choropleth | Revenue by US state (interactive HTML) |
+| `11_clv_distribution_tiers.png` | Histogram + Pie | CLV distribution + tier breakdown |
+| `12_clv_by_category_subscription.png` | Bar charts | CLV by category + subscription |
+| `13_clv_model_results.png` | Scatter + Bar | Actual vs predicted CLV + feature importance |
+| `14_ab_test_summary.png` | 6-panel bar | All A/B test mean comparisons |
+| `15_ab_test_forest_plot.png` | Forest plot | 95% CI on mean differences |
 
 ---
 
 ## 7. RFM Customer Segmentation
 
-RFM (Recency, Frequency, Monetary) is a proven marketing technique to rank and segment customers by behaviour.
+RFM scores every customer 1–15 and assigns a business segment.
 
-### Proxy Measures Used
+### Proxy Measures (no dates in dataset)
 
-Since the dataset has no actual transaction dates, the following proxies were applied:
-
-| RFM Dimension | Proxy | Direction |
+| Dimension | Proxy | Direction |
 |---|---|---|
-| Recency (R) | `purchase_frequency_days` | Lower days → Higher score (shops more recently) |
-| Frequency (F) | `previous_purchases` | Higher count → Higher score |
-| Monetary (M) | `purchase_amount` | Higher spend → Higher score |
-
-### Scoring Method
-
-Each dimension scored 1–5 using `pd.qcut()` with `duplicates='drop'` to handle discrete frequency values. Total RFM score = R + F + M (range: 3–15).
+| Recency (R) | `purchase_frequency_days` | Lower days → higher score |
+| Frequency (F) | `previous_purchases` | Higher count → higher score |
+| Monetary (M) | `purchase_amount` | Higher spend → higher score |
 
 ### Segments
 
-| Segment | Score Range | Description |
+| Segment | Score | Description |
 |---|---|---|
-| Champions | 13–15 | Best customers — frequent, high spend, recently active |
-| Loyal Customers | 10–12 | Regular buyers with solid spend |
-| Potential Loyalists | 7–9 | Promising customers who need engagement |
-| At Risk | 5–6 | Previously good, now showing decline |
-| Lost | < 5 | Inactive or low-value — difficult to recover |
+| Champions | 13–15 | Best customers — retain at all costs |
+| Loyal Customers | 10–12 | Regular buyers — reward them |
+| Potential Loyalists | 7–9 | Promising — nurture with offers |
+| At Risk | 5–6 | Declining — reactivation campaigns |
+| Lost | < 5 | Inactive — win-back or abandon |
 
 ---
 
 ## 8. Churn Prediction Model
 
-### Churn Label Definition (Rule-Based)
-
-A customer is labelled as churned (`is_churn = 1`) if **all three** conditions are true:
-- `purchase_frequency_days >= 90` (infrequent shopper)
-- `review_rating < 3.5` (low satisfaction)
-- `subscription_status == 'No'` (not subscribed)
+### Label Definition
+Customer is churned (`is_churn=1`) if **all three** conditions hold:
+- `purchase_frequency_days >= 90`
+- `review_rating < 3.5`
+- `subscription_status == 'No'`
 
 ### Model
 
 | Property | Value |
 |---|---|
 | Algorithm | Random Forest Classifier |
-| Trees | 200 |
-| Max depth | 10 |
-| Train/test split | 80% / 20% (stratified) |
-| Random state | 42 |
-
-### Features Used
-
-`age`, `purchase_amount`, `review_rating`, `previous_purchases`, `purchase_frequency_days`, `gender`, `category`, `shipping_type`, `discount_applied`, `payment_method`
-
-Categorical features were label-encoded before training.
-
-### Output
-
-- Confusion matrix showing true/false positives and negatives
-- Feature importance chart showing which variables drive churn most
-- `churn_probability` column added to the final dataframe for every customer
+| Trees | 200, Max depth 10 |
+| Split | 80/20 stratified |
+| Output | `churn_probability` per customer |
 
 ---
 
-## 9. SQL Queries Reference
+## 9. Customer Lifetime Value (CLV)
 
-Queries are organised into 4 sections in `customer_behavior_sql_queries.sql`.
+### Formula
+```
+CLV = purchase_amount × (365 / purchase_frequency_days) × lifespan_years
 
-### Section 1 — Revenue Analysis
+lifespan_years = 1 + (previous_purchases / purchases_per_year) / 12
+```
 
-| # | Query | Key Technique |
+### ML Model
+
+| Property | Value |
+|---|---|
+| Algorithm | Gradient Boosting Regressor |
+| Trees | 300, Max depth 5, LR=0.05 |
+| R² Score | 0.9999 |
+| MAE | ~$9.50 |
+
+### CLV Tiers
+- **High Value** — top 25% by CLV
+- **Mid Value** — middle 50%
+- **Low Value** — bottom 25%
+
+---
+
+## 10. A/B Testing
+
+Statistical significance testing using:
+- **Welch's two-sample t-test** (unequal variance)
+- **Cohen's d** effect size
+- **Bootstrap 95% Confidence Interval** (2,000 resamples)
+
+### Pre-defined Tests
+
+| Test | Conclusion |
+|---|---|
+| Discount Applied vs Not | ❌ Not significant (p=0.27, d=0.04) |
+| Subscribed vs Not Subscribed | ❌ Not significant (p=0.66, d=0.02) |
+| Express vs Standard Shipping | ❌ Not significant (p=0.13, d=0.08) |
+| Male vs Female Spend | ❌ Not significant (p=0.38, d=0.03) |
+| Clothing vs Footwear Revenue | ❌ Not significant (p=0.84, d=0.01) |
+| Loyal vs New Customer Spend | ❌ Not significant (p=0.69, d=0.05) |
+
+**Key Finding:** None of the common business assumptions produce statistically significant differences in spend. The business cannot assume discounts or subscriptions drive higher revenue — deeper segmentation is needed.
+
+### Custom Test Builder
+The Streamlit app allows running any custom A/B test on any two groups from any column.
+
+---
+
+## 11. SQL Queries Reference
+
+File: `sql/customer_behavior_sql_queries.sql`
+
+### Section 1 — Revenue Analysis (Q1–Q4)
+| # | Query | Key SQL |
 |---|---|---|
 | Q1 | Revenue by gender + avg spend | GROUP BY, SUM, AVG |
 | Q2 | Discount buyers above average + margin | Subquery, calculated column |
-| Q3 | Revenue by age group + % contribution | SUM() OVER() window function |
-| Q4 | Standard vs Express shipping comparison | WHERE IN, GROUP BY |
+| Q3 | Revenue by age group + % contribution | SUM() OVER() |
+| Q4 | Standard vs Express shipping | WHERE IN |
 
-### Section 2 — Product Analysis
-
-| # | Query | Key Technique |
+### Section 2 — Product Analysis (Q5–Q7)
+| # | Query | Key SQL |
 |---|---|---|
-| Q5 | Top 5 products by avg review rating | GROUP BY, AVG, ORDER BY |
-| Q6 | Top 5 products by discount rate % | CASE WHEN, ratio calculation |
+| Q5 | Top 5 products by review rating | ORDER BY DESC |
+| Q6 | Top 5 products by discount rate % | CASE WHEN ratio |
 | Q7 | Top 3 products per category | ROW_NUMBER() OVER(PARTITION BY) |
 
-### Section 3 — Customer Segmentation & Loyalty
-
-| # | Query | Key Technique |
+### Section 3 — Segmentation & Loyalty (Q8–Q10)
+| # | Query | Key SQL |
 |---|---|---|
 | Q8 | Loyalty tier counts + avg spend | CTE, CASE WHEN, JOIN |
-| Q9 | Subscribed vs not — spend comparison | GROUP BY, SUM, AVG |
-| Q10 | Repeat buyers vs subscription % | WHERE, window function for % |
+| Q9 | Subscribed vs not — full comparison | GROUP BY |
+| Q10 | Repeat buyers vs subscription % | Window function % |
 
-### Section 4 — Advanced Analytics (New)
-
-| # | Query | Key Technique |
+### Section 4 — Advanced Analytics (Q11–Q15)
+| # | Query | Key SQL |
 |---|---|---|
-| Q11 | Running revenue total + percentile rank | SUM() OVER, RANK() OVER |
-| Q12 | Top 5 US states by revenue | GROUP BY, ORDER BY, LIMIT |
-| Q13 | Payment method avg spend + revenue | Aggregation |
-| Q14 | Season × Category revenue pivot | CASE WHEN conditional aggregation |
-| Q15 | Full RFM scoring in SQL | NTILE(), CASE WHEN, multiple CTEs |
+| Q11 | Running total + percentile rank | SUM() OVER, RANK() OVER |
+| Q12 | Top 5 US states by revenue | ORDER BY, LIMIT |
+| Q13 | Payment method avg spend | Aggregation |
+| Q14 | Season × Category revenue pivot | CASE WHEN pivot |
+| Q15 | Full RFM scoring in SQL | NTILE(), CTEs, CASE WHEN |
 
 ---
 
-## 10. File Inventory
+## 12. Streamlit Dashboard
+
+File: `streamlit_app/app.py`  
+Run: `streamlit run streamlit_app/app.py`
+
+### 8 Tabs
+
+| Tab | Content |
+|---|---|
+| 📊 Revenue Overview | Category/season/gender revenue · top products · distribution |
+| 👥 Customer Segments | Age groups · loyalty tiers · shipping · payment · subscription |
+| 🎯 RFM Analysis | Segment counts · avg spend · score distribution · segment×subscription |
+| ⚠️ Churn Risk | Churn rate KPIs · by category/age · top 20 at-risk table |
+| 🗺️ Geographic Map | US choropleth · 4 switchable metrics · top/bottom state tables |
+| 💰 CLV Prediction | CLV KPIs · distribution · tiers · ML model results · top customers |
+| 🧪 A/B Testing | 6 pre-defined tests · custom test builder · verdict banners · forest plots |
+| 📋 Raw Data | Full filterable table · CSV download |
+
+### Sidebar Filters (apply to all tabs)
+Gender · Category · Season · Subscription Status · Age Range slider
+
+### Module Files
+| File | Purpose |
+|---|---|
+| `app.py` | Main Streamlit app |
+| `clv_model.py` | CLV formula + Gradient Boosting model |
+| `ab_test.py` | Welch t-test, Cohen's d, Bootstrap CI |
+| `generate_geo_map.py` | Standalone US map generator |
+| `generate_clv_plots.py` | Standalone CLV chart generator |
+| `generate_ab_plots.py` | Standalone A/B test chart generator |
+
+---
+
+## 13. GitHub Actions CI/CD
+
+Directory: `.github/workflows/`
+
+### Workflow 1 — Notebook CI (`notebook_ci.yml`)
+- **Trigger:** Push to `notebooks/` or `data/`
+- **Steps:** Checkout → Python 3.13 → Install deps → Execute notebook → Upload artifact
+- **Purpose:** Ensures notebook runs clean on every push
+
+### Workflow 2 — Code Quality (`code_quality.yml`)
+- **Trigger:** Push to `streamlit_app/`
+- **Jobs:** `lint` (flake8), `security` (bandit)
+- **Purpose:** Maintains code standards and scans for security issues
+
+### Workflow 3 — Streamlit Test (`streamlit_test.yml`)
+- **Trigger:** Push to `streamlit_app/` or `data/`
+- **Steps:** Validates CLV model (R²>0.5), A/B test module (6 tests), app.py syntax
+- **Purpose:** Ensures the web app always works after any change
+
+---
+
+## 14. File Inventory
 
 ```
 customer-trends-data-analysis-SQL-Python-PowerBI/
 │
-├── 📓 Customer_Shopping_Behavior_Analysis.ipynb   ← MODIFIED — full notebook
-├── 🗄️  customer_behavior_sql_queries.sql           ← MODIFIED — 15 queries, 4 sections
-├── 📊 customer_behavior_dashboard.pbix            ← original Power BI dashboard
+├── 📁 .github/workflows/
+│   ├── notebook_ci.yml              ← CI: execute notebook
+│   ├── code_quality.yml             ← CI: lint + security
+│   └── streamlit_test.yml           ← CI: app smoke test
 │
-├── 📁 plots/                                      ← NEW
-│   ├── 01_purchase_distribution_gender.png
-│   ├── 02_revenue_category_season.png
-│   ├── 03_age_group_subscription.png
-│   ├── 04_shipping_payment_discount.png
-│   ├── 05_products_ratings.png
-│   ├── 06_correlation_heatmap.png
-│   ├── 07_loyalty_subscription_heatmap.png
-│   ├── 08_rfm_segments.png
-│   └── 09_churn_model.png
+├── 📁 data/
+│   ├── raw/customer_shopping_behavior.csv
+│   └── processed/customer_shopping_behavior_cleaned.csv
 │
-├── 📄 customer_shopping_behavior.csv              ← original raw dataset
-├── 📄 customer_shopping_behavior_cleaned.csv      ← NEW — cleaned + 24 cols
-├── 📋 requirements.txt                            ← NEW
-├── 🔒 .gitignore                                  ← NEW
-├── 📄 DOCUMENTATION.md                            ← NEW — this file
-├── 🌐 documentation.html                          ← NEW — styled HTML version
+├── 📁 notebooks/
+│   └── Customer_Shopping_Behavior_Analysis.ipynb
 │
-├── 📄 Business Problem Document.pdf               ← original
-├── 📄 Customer Shopping Behavior Analysis.pdf     ← original
-├── 📄 Customer-Shopping-Behavior-Analysis.pptx   ← original
-└── 📜 LICENSE                                     ← original
+├── 📁 sql/
+│   └── customer_behavior_sql_queries.sql
+│
+├── 📁 dashboard/
+│   └── customer_behavior_dashboard.pbix
+│
+├── 📁 plots/  (15 files)
+│   ├── 01–09: EDA charts (PNG)
+│   ├── 10: US revenue map (PNG + HTML)
+│   ├── 11–13: CLV charts (PNG)
+│   └── 14–15: A/B test charts (PNG)
+│
+├── 📁 streamlit_app/
+│   ├── app.py
+│   ├── clv_model.py
+│   ├── ab_test.py
+│   ├── generate_geo_map.py
+│   ├── generate_clv_plots.py
+│   ├── generate_ab_plots.py
+│   └── requirements.txt
+│
+├── 📁 reports/
+│   ├── Business Problem Document.pdf
+│   ├── Customer Shopping Behavior Analysis.pdf
+│   └── Customer-Shopping-Behavior-Analysis.pptx
+│
+├── 📁 docs/
+│   ├── DOCUMENTATION.md             ← this file
+│   └── documentation.html           ← styled HTML version
+│
+├── README.md
+├── requirements.txt
+├── .gitignore
+└── LICENSE
 ```
 
 ---
 
-## 11. How to Run Locally
+## 15. How to Run Locally
 
 ### Prerequisites
 - Python 3.13 (conda recommended)
-- One of: PostgreSQL / MySQL / MS SQL Server
+- PostgreSQL / MySQL / MS SQL Server (for SQL section)
 - Power BI Desktop (Windows)
 
 ### Setup
-
 ```bash
-# 1. Clone
 git clone https://github.com/hrts51/customer-trends-data-analysis-SQL-Python-PowerBI.git
 cd customer-trends-data-analysis-SQL-Python-PowerBI
 
-# 2. Create environment
 conda create -n customer-analysis python=3.13
 conda activate customer-analysis
-
-# 3. Install dependencies
 pip install -r requirements.txt
-
-# 4. Launch notebook
-jupyter notebook Customer_Shopping_Behavior_Analysis.ipynb
 ```
 
-### Notebook Execution Order
+### Run Jupyter Notebook
+```bash
+jupyter notebook notebooks/Customer_Shopping_Behavior_Analysis.ipynb
+```
 
-1. Run all cells in **Section 1** (Data Import & Exploration)
-2. Run all cells in **Section 2** (Data Cleaning)
-3. Run all cells in **Section 3** (Feature Engineering)
-4. Run all cells in **Section 4** (EDA) — charts saved to `plots/`
-5. Run all cells in **Section 5** (RFM Segmentation)
-6. Run all cells in **Section 6** (Churn Prediction)
-7. In **Section 7** (SQL Load), uncomment the block matching your database and fill in your credentials
+### Run Streamlit Dashboard
+```bash
+cd streamlit_app
+streamlit run app.py
+# Opens at http://localhost:8501
+```
+
+### Generate All Plots
+```bash
+cd streamlit_app
+python generate_geo_map.py      # US map
+python generate_clv_plots.py    # CLV charts
+python generate_ab_plots.py     # A/B test charts
+```
 
 ### SQL Setup
-
 ```sql
--- Create the database first (PostgreSQL example)
 CREATE DATABASE customer_behavior;
+-- Then uncomment the relevant DB section in the notebook and run
+-- Then open sql/customer_behavior_sql_queries.sql in your SQL client
 ```
 
-Then run the notebook's SQL load cell, followed by opening `customer_behavior_sql_queries.sql` in your client.
-
-### Power BI Setup
-
-1. Open `customer_behavior_dashboard.pbix` in Power BI Desktop
-2. Connect to your SQL database **or** import `customer_shopping_behavior_cleaned.csv` directly
-
 ---
 
-## 12. Key Business Insights
+## 16. Key Business Insights
 
 1. **Gender Revenue Gap is Smaller Than Expected**  
-   Male customers make up ~68% of transactions, but their average spend per transaction is only marginally higher than female customers — gender alone is not a strong revenue predictor.
+   Male customers are ~68% of transactions but avg spend difference vs female is statistically insignificant (p=0.38).
 
-2. **Clothing Dominates, Spring Peaks**  
-   Clothing is the top revenue category across all seasons. Spring consistently drives the highest seasonal revenue.
+2. **Clothing + Spring = Peak Revenue**  
+   Clothing is the top category; Spring generates highest seasonal revenue.
 
-3. **Subscriptions Drive Loyalty**  
-   Subscribed customers spend more per transaction on average and have significantly more previous purchases — subscription is a strong loyalty signal.
+3. **Subscriptions Signal Loyalty, Not Spend**  
+   Subscribed customers don't spend significantly more per transaction (p=0.66) but have more previous purchases — subscription predicts retention, not ticket size.
 
-4. **Champions Are the Revenue Core**  
-   The top RFM segment (Champions) represents roughly 20% of customers but drives a disproportionately large share of total revenue. Retaining this segment should be the top priority.
+4. **Champions Drive Disproportionate Revenue**  
+   Top RFM segment (~20% of customers) generates a disproportionately large revenue share.
 
-5. **Churn Profile is Clear and Actionable**  
-   At-risk customers share a clear profile: infrequent purchase cycle (≥90 days), low review rating (<3.5), not subscribed. These customers can be targeted with re-engagement campaigns.
+5. **Discounts Are Ineffective**  
+   Customers using discounts don't spend more than non-discount buyers (p=0.27, d=0.04 — negligible effect). The discount program may be eroding margin without driving incremental revenue.
 
-6. **Discounts Don't Always Lift Spend**  
-   Customers who used discounts do not consistently spend more than non-discount buyers on average. The discount strategy may be reducing revenue without driving incremental purchases.
+6. **CLV is Predictable**  
+   Gradient Boosting model predicts customer lifetime value with R²=0.9999 — previous purchases and purchase frequency are the dominant drivers.
+
+7. **Churn Profile is Actionable**  
+   Churn-risk customers share 3 clear traits: infrequent (≥90 days), low rating (<3.5), not subscribed. These can be directly targeted.
+
+8. **Geographic Revenue is Dispersed**  
+   Revenue is spread fairly evenly across states — no single geographic market dominates, suggesting national rather than regional strategy is appropriate.
 
 ---
 
-## 13. Git Commit History
+## 17. Git Commit History
 
-| Commit Hash | Message |
+| Hash | Message |
 |---|---|
-| `f1662ec` | Update author details to Ankit Kumar (hrts51) |
-| `0a25dc7` | Improve project: EDA visualizations, RFM segmentation, churn prediction, enhanced SQL queries, requirements.txt, .gitignore, updated README |
-| `c84947a` | Update README.md |
-| `ab5bf4f` | Update README.md |
-| `da66720` | Update README.md |
+| `9af7e08` | Add GitHub Actions CI — notebook, code quality, streamlit test + badges |
+| `f5b03d0` | Add A/B testing — Welch t-test, Cohen's d, bootstrap CI, forest plot |
+| `96ad42d` | Add CLV prediction — Gradient Boosting, tier segmentation, Streamlit tab |
+| `7d34a54` | Add geographic US revenue map — choropleth, interactive HTML + PNG |
+| `7eccb0f` | Add Streamlit interactive dashboard (5 tabs) |
+| `1f72772` | Fix LICENSE — Ankit Kumar 2026 |
+| `31f7604` | Initial commit — Customer Shopping Behavior Analysis by Ankit Kumar |
 
 ---
 
