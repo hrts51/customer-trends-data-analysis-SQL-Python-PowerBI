@@ -10,6 +10,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from clv_model import compute_clv, train_clv_model
+from ab_test import run_ab_test, run_all_tests
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -154,13 +155,14 @@ c6.metric("Churn Risk",        f"{filtered['churn_risk'].sum():,}")
 st.markdown("---")
 
 # ── Tab layout ────────────────────────────────────────────────────────────────
-tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs([
     "📊 Revenue Overview",
     "👥 Customer Segments",
     "🎯 RFM Analysis",
     "⚠️ Churn Risk",
     "🗺️ Geographic Map",
     "💰 CLV Prediction",
+    "🧪 A/B Testing",
     "📋 Raw Data"
 ])
 
@@ -725,9 +727,179 @@ with tab6:
 
 
 # ════════════════════════════════════════════════════════
-# TAB 7 — Raw Data
+# TAB 7 — A/B Testing
 # ════════════════════════════════════════════════════════
 with tab7:
+    st.markdown("""
+    **A/B Testing** checks whether differences between groups are *statistically significant*
+    or just random noise. Uses **Welch's t-test**, **Cohen's d effect size**, and
+    **Bootstrap 95% Confidence Intervals**.
+    """)
+
+    # ── Run all pre-defined tests ──
+    with st.spinner("Running statistical tests..."):
+        all_results = run_all_tests(filtered)
+
+    # ── Summary table ──
+    st.markdown('<div class="section-header">📋 All Tests — Summary</div>', unsafe_allow_html=True)
+
+    summary_rows = []
+    for test_name, r in all_results.items():
+        summary_rows.append({
+            "Test": test_name,
+            f"Mean {r['label_a']}": f"${r['mean_a']:.2f}",
+            f"Mean {r['label_b']}": f"${r['mean_b']:.2f}",
+            "Difference": f"${r['mean_diff']:+.2f}",
+            "p-value": r["p_value"],
+            "Significant?": "✅ Yes" if r["significant"] else "❌ No",
+            "Effect Size": r["effect_size"],
+            "Cohen's d": r["cohens_d"],
+        })
+
+    summary_df = pd.DataFrame(summary_rows)
+    st.dataframe(summary_df, use_container_width=True, hide_index=True)
+
+    st.markdown("---")
+
+    # ── Custom A/B test builder ──
+    st.markdown('<div class="section-header">🔬 Custom A/B Test Builder</div>', unsafe_allow_html=True)
+    st.caption("Pick any two groups and run your own test on the filtered data.")
+
+    col_left, col_right = st.columns(2)
+    with col_left:
+        split_col = st.selectbox("Split by column:", [
+            "discount_applied", "subscription_status", "gender",
+            "season", "category", "shipping_type", "payment_method"
+        ])
+    with col_right:
+        metric_col = st.selectbox("Measure:", ["purchase_amount", "review_rating", "previous_purchases"])
+
+    unique_vals = sorted(filtered[split_col].dropna().unique().tolist())
+    if len(unique_vals) >= 2:
+        col_a, col_b = st.columns(2)
+        with col_a:
+            val_a = st.selectbox("Group A:", unique_vals, index=0)
+        with col_b:
+            val_b = st.selectbox("Group B:", unique_vals, index=min(1, len(unique_vals)-1))
+
+        if val_a != val_b:
+            group_a = filtered[filtered[split_col] == val_a][metric_col].values
+            group_b = filtered[filtered[split_col] == val_b][metric_col].values
+
+            if len(group_a) >= 10 and len(group_b) >= 10:
+                result = run_ab_test(group_a, group_b, str(val_a), str(val_b))
+
+                # Result cards
+                r1, r2, r3, r4 = st.columns(4)
+                r1.metric(f"Mean — {val_a}", f"${result['mean_a']:.2f}" if metric_col == "purchase_amount" else f"{result['mean_a']:.2f}")
+                r2.metric(f"Mean — {val_b}", f"${result['mean_b']:.2f}" if metric_col == "purchase_amount" else f"{result['mean_b']:.2f}")
+                r3.metric("p-value", result["p_value"],
+                          delta="Significant ✅" if result["significant"] else "Not Significant ❌",
+                          delta_color="normal" if result["significant"] else "off")
+                r4.metric("Cohen's d", f"{result['cohens_d']:.3f}", delta=result["effect_size"])
+
+                # Verdict banner
+                if result["significant"]:
+                    st.success(f"✅ **Statistically Significant** (p={result['p_value']}) — "
+                               f"The difference of **${result['mean_diff']:+.2f}** between "
+                               f"*{val_a}* and *{val_b}* is real, not random. "
+                               f"Effect size: **{result['effect_size']}** (Cohen's d = {result['cohens_d']:.3f})")
+                else:
+                    st.warning(f"❌ **Not Statistically Significant** (p={result['p_value']}) — "
+                               f"The difference of **${result['mean_diff']:+.2f}** could be due to chance. "
+                               f"Effect size: **{result['effect_size']}** (Cohen's d = {result['cohens_d']:.3f})")
+
+                st.info(f"**95% Bootstrap CI on difference:** "
+                        f"[${result['ci_low']:+.2f}, ${result['ci_high']:+.2f}]  |  "
+                        f"n({val_a}) = {result['n_a']:,}  |  n({val_b}) = {result['n_b']:,}")
+
+                # Distribution comparison
+                col_v1, col_v2 = st.columns(2)
+
+                with col_v1:
+                    st.markdown('<div class="section-header">Distribution Comparison</div>', unsafe_allow_html=True)
+                    import plotly.figure_factory as ff
+                    fig = ff.create_distplot(
+                        [group_a.tolist(), group_b.tolist()],
+                        group_labels=[str(val_a), str(val_b)],
+                        colors=["#60a5fa", "#f472b6"],
+                        show_hist=False, show_rug=False
+                    )
+                    fig.add_vline(x=result["mean_a"], line_dash="dash",
+                                  line_color="#60a5fa",
+                                  annotation_text=f"μ={result['mean_a']:.1f}")
+                    fig.add_vline(x=result["mean_b"], line_dash="dash",
+                                  line_color="#f472b6",
+                                  annotation_text=f"μ={result['mean_b']:.1f}")
+                    fig.update_layout(
+                        plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
+                        font_color="#cbd5e1", height=340,
+                        margin=dict(l=0,r=0,t=10,b=0),
+                        legend=dict(font=dict(color="#cbd5e1"))
+                    )
+                    st.plotly_chart(fig, use_container_width=True)
+
+                with col_v2:
+                    st.markdown('<div class="section-header">Box Plot Comparison</div>', unsafe_allow_html=True)
+                    box_df = pd.DataFrame({
+                        "value": np.concatenate([group_a, group_b]),
+                        "group": [str(val_a)] * len(group_a) + [str(val_b)] * len(group_b)
+                    })
+                    fig = px.box(box_df, x="group", y="value",
+                                 color="group",
+                                 color_discrete_map={str(val_a): "#60a5fa", str(val_b): "#f472b6"},
+                                 points="outliers",
+                                 labels={"value": metric_col.replace("_", " ").title(), "group": ""})
+                    fig.update_layout(
+                        showlegend=False,
+                        plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
+                        font_color="#cbd5e1", height=340,
+                        margin=dict(l=0,r=0,t=10,b=0)
+                    )
+                    st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.warning("Not enough data in one or both groups (need at least 10 each). Try adjusting filters.")
+        else:
+            st.info("Select two different groups to compare.")
+
+    st.markdown("---")
+
+    # ── Effect size guide ──
+    st.markdown('<div class="section-header">📖 How to Read Results</div>', unsafe_allow_html=True)
+    guide_col1, guide_col2 = st.columns(2)
+
+    with guide_col1:
+        st.markdown("""
+        **p-value (significance threshold = 0.05)**
+        - `p < 0.05` → Statistically significant ✅
+        - `p ≥ 0.05` → Not significant ❌
+        - Lower p = stronger evidence against chance
+
+        **What it means:**
+        If p < 0.05, there's less than 5% probability that the
+        observed difference happened by random chance.
+        """)
+
+    with guide_col2:
+        st.markdown("""
+        **Cohen's d (Effect Size)**
+        | Range | Interpretation |
+        |---|---|
+        | < 0.2 | Negligible |
+        | 0.2 – 0.5 | Small |
+        | 0.5 – 0.8 | Medium |
+        | > 0.8 | Large |
+
+        **95% Confidence Interval:**
+        Range where the true mean difference lies 95% of the time.
+        If it doesn't cross 0 → significant.
+        """)
+
+
+# ════════════════════════════════════════════════════════
+# TAB 8 — Raw Data
+# ════════════════════════════════════════════════════════
+with tab8:
     st.markdown(f"**Showing {len(filtered):,} of {len(df):,} records** (after filters)")
     st.dataframe(
         filtered[[
